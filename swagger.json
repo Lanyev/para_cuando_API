@@ -1,0 +1,111 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Para Cuando API",
+    "description": "Api para la aplicación de Para Cuando",
+    "version": "1.0"
+  },
+  "host": "localhost:9000",
+  "basePath": "/",
+  "schemes": ["https"],
+  "paths": {
+    "/api-docs": {
+      "get": {
+        "tags": ["api-docs"],
+        "summary": "Get API documentation",
+        "description": "Get API documentation",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": ["login"],
+        "summary": "Login",
+        "description": "Login",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Login",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
+        }
+      }
+    },
+    "/signUp": {
+      "post": {
+        "tags": ["signUp"],
+        "summary": "Sign up",
+        "description": "Sign up",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Sign up",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
+        }
+      }
+    },
+    "/forgetPassword": {
+      "post": {
+        "tags": ["forgetPassword"],
+        "summary": "Forget password",
+        "description": "Forget password",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Forget password",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
+        }
+      }
+    },
+    "/restorePassword": {
+      "post": {
+        "tags": ["restorePassword"],
+        "summary": "Restore password",
+        "description": "Restore password",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Restore password",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {}
+}
