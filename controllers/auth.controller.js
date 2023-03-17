@@ -120,10 +120,43 @@ const userToken = async (request, response, next) => {
   }
 };
 
+const getUsers = async (request, response, next) => {
+  try {
+    let users = await usersService.getUsers();
+    response.status(200).json({ results: users });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getUserById = async (request, response, next) => {
+  try {
+    let id = request.params.id;
+    let user = await usersService.getUserById(id);
+    response.status(200).json({ results: user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateUserById = async (request, response, next) => {
+  try {
+    let id = request.params.id;
+    let body = request.body;
+    let user = await usersService.updateUserById(id, body);
+    response.status(200).json({ results: user });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   logIn,
   signUp,
   forgetPassword,
   restorePassword,
   userToken,
+  getUsers,
+  getUserById,
+  updateUserById,
 };

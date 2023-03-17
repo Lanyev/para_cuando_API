@@ -1,111 +1,137 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Para Cuando API",
-    "description": "Api para la aplicación de Para Cuando",
-    "version": "1.0"
+    "version": "1.0.0",
+    "title": "Authentication API"
   },
-  "host": "localhost:9000",
-  "basePath": "/",
-  "schemes": ["https"],
+  "basePath": "/api/v1",
+  "schemes": ["http", "https"],
   "paths": {
-    "/api-docs": {
-      "get": {
-        "tags": ["api-docs"],
-        "summary": "Get API documentation",
-        "description": "Get API documentation",
-        "produces": ["application/json"],
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          }
-        }
-      }
-    },
-    "/login": {
+    "/auth/login": {
       "post": {
-        "tags": ["login"],
-        "summary": "Login",
-        "description": "Login",
+        "summary": "Log in a user",
+        "consumes": ["application/json"],
         "produces": ["application/json"],
         "parameters": [
           {
             "name": "body",
             "in": "body",
-            "description": "Login",
-            "required": true
+            "description": "The user credentials",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "example": "example@example.com"
+                },
+                "password": {
+                  "type": "string",
+                  "example": "mypassword"
+                }
+              }
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Successful operation"
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Correct Credentials"
+                },
+                "token": {
+                  "type": "string",
+                  "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJleGFtcGxlQGV4YW1wbGUuY29tIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Invalid email or password"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Internal Server Error"
+                }
+              }
+            }
           }
         }
       }
     },
-    "/signUp": {
+    "/auth/signup": {
       "post": {
-        "tags": ["signUp"],
-        "summary": "Sign up",
-        "description": "Sign up",
+        "summary": "Sign up a new user",
+        "consumes": ["application/json"],
         "produces": ["application/json"],
         "parameters": [
           {
             "name": "body",
             "in": "body",
-            "description": "Sign up",
-            "required": true
+            "description": "The user details",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "firstName": {
+                  "type": "string",
+                  "example": "John"
+                },
+                "lastName": {
+                  "type": "string",
+                  "example": "Doe"
+                },
+                "email": {
+                  "type": "string",
+                  "example": "example@example.com"
+                },
+                "password": {
+                  "type": "string",
+                  "example": "mypassword"
+                }
+              }
+            }
           }
         ],
         "responses": {
-          "200": {
-            "description": "Successful operation"
-          }
-        }
-      }
-    },
-    "/forgetPassword": {
-      "post": {
-        "tags": ["forgetPassword"],
-        "summary": "Forget password",
-        "description": "Forget password",
-        "produces": ["application/json"],
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "description": "Forget password",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          }
-        }
-      }
-    },
-    "/restorePassword": {
-      "post": {
-        "tags": ["restorePassword"],
-        "summary": "Restore password",
-        "description": "Restore password",
-        "produces": ["application/json"],
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "description": "Restore password",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation"
+          "201": {
+            "description": "User account created successfully",
+            "schema": {
+              "$ref": "#/definitions/UserSignupResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request. Invalid user details provided",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           }
         }
       }
     }
-  },
-  "definitions": {}
+  }
 }
