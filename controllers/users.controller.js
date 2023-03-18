@@ -24,12 +24,10 @@ const getUserById = async (request, response, next) => {
     let { id } = request.params;
     let userId = request.user.id;
     if (userId === id) {
-      // Crear funciones de servicio para obtener los datos del usuario
       let user = await UserService.getUser(id);
       return response.json({ results: user });
     } else {
       return response.status(401).json({ message: 'Unauthorized' });
-      
     }
   } catch (error) {
     next(error);
@@ -39,16 +37,7 @@ const getUserById = async (request, response, next) => {
 const getMyUser = async (request, response, next) => {
   try {
     let { id } = request.user.id;
-    let { first_name, last_name, image_url, email, username, phone } =
-      request.body;
-    let user = await UserService.getUser(id, {
-      first_name,
-      last_name,
-      image_url,
-      email,
-      username,
-      phone,
-    });
+    let user = await UserService.getUser(id);
     return response.json({ results: user });
   } catch (error) {
     next(error);
@@ -58,14 +47,8 @@ const getMyUser = async (request, response, next) => {
 const patchUser = async (request, response, next) => {
   try {
     let { id } = request.user.id;
-    let { first_name, last_name, country_id, code_phone, phone } = request.body;
-    let user = await UserService.updateUser(id, {
-      first_name,
-      last_name,
-      country_id,
-      code_phone,
-      phone,
-    });
+    let { body } = request;
+    let user = await UserService.updateUser(id, body);
     return response.json({ results: user });
   } catch (error) {
     next(error);

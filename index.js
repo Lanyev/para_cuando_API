@@ -62,5 +62,6 @@ routerModels(app);
 routerErrorHandler(app);
 
 app.listen(PORT, () => {
-  console.log(`Server on PORT: ${PORT}`);
+  //show url in console
+  console.log(`Server running on http://localhost:${PORT}`);
 });
