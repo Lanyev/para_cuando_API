@@ -12,7 +12,7 @@ module.exports = {
     const transaction = await queryInterface.sequelize.transaction();
     try {
       const adminUser = await usersService.findUserByEmailOr404(
-        'example@academlo.com'
+        'julio@academlo.com'
       );
       const adminRole = await rolesService.findRoleByName('admin');
       const profiles = [

@@ -1,26 +1,25 @@
-'use strict'
+'use strict';
 const {
   Model
-} = require('sequelize')
+} = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Countries extends Model {
+  class States extends Model {
     static associate(models) {
-      Countries.hasMany(models.Users, { as: 'users', foreignKey: 'country_id' })
-      Countries.hasMany(models.States, { as: 'states', foreignKey: 'country_id' })
+      States.belongsTo( models.Countries, { as: 'countries', foreignKey: 'country_id '} )
+      // States.hasMany( models.Cities, { as: 'cities', foreignKey: 'states_id'} )
     }
   }
-  Countries.init({
+  States.init({
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true
     },
-    name: {
-      type: DataTypes.STRING
-    }
+    country_id: DataTypes.INTEGER,
+    name: DataTypes.STRING
   }, {
     sequelize,
-    modelName: 'Countries',
-    tableName: 'countries',
+    modelName: 'States',
+    tableName: 'states',
     underscored: true,
     timestamps: true,
     scopes: {
@@ -30,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
       no_timestamps: {
         attributes: { exclude: ['created_at', 'updated_at'] }
       },
-    },
-  })
-  return Countries
-}
+    }
+  });
+  return States;
+};
