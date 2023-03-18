@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "version": "1.0.0",
-    "title": "Authentication API"
+    "title": "Para Cuando API"
   },
   "basePath": "/api/v1",
   "schemes": ["http", "https"],
