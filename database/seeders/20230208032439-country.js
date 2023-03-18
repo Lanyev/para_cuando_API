@@ -16,6 +16,30 @@ module.exports = {
           name: 'México',
           created_at: new Date(),
           updated_at: new Date()
+        },
+        {
+          id: '2',
+          name: 'Colombia',
+          created_at: new Date(),
+          updated_at: new Date()
+        },
+        {
+          id: '3',
+          name: 'Peru',
+          created_at: new Date(),
+          updated_at: new Date()
+        },
+        {
+          id: '4',
+          name: 'Argentina',
+          created_at: new Date(),
+          updated_at: new Date()
+        },
+        {
+          id: '5',
+          name: 'Uruguay',
+          created_at: new Date(),
+          updated_at: new Date()
         }
       ], { transaction })
 
@@ -32,6 +56,18 @@ module.exports = {
       await queryInterface.bulkDelete('countries', {
         name: {
           [Op.or]: ['México']
+        },
+        name: {
+          [Op.or]: ['Colombia']
+        },
+        name: {
+          [Op.or]: ['Peru']
+        },
+        name: {
+          [Op.or]: ['Argentina']
+        },
+        name: {
+          [Op.or]: ['Uruguay']
         }
       }, { transaction })
       await transaction.commit()

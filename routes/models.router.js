@@ -1,5 +1,5 @@
 const express = require('express');
-// const routesUsers = require('./users.routes')
+const routesUsers = require('./users.routes');
 
 // const isAuthenticatedByPassportJwt = require('../libs/passport')
 
@@ -11,6 +11,7 @@ function routerModels(app) {
 
   app.use('/api/v1', router);
   router.use('/auth', routesAuth);
+  
   router.use('/users', routesUsers);
 }
 
