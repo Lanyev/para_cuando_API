@@ -41,6 +41,9 @@ Accept Json & form-urlencoded
 */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+/*
+Swagger UI
+*/
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 /* 
     Tell everyone the state of your api
