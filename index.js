@@ -1,15 +1,32 @@
 const express = require('express');
 const cors = require('cors');
-const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('./swagger.json');
 const helmet = require('helmet');
 require('dotenv').config();
-
+const path = require('path');
 const routerModels = require('./routes/models.router');
 const routerErrorHandler = require('./routes/errorhandler.router');
-
 const app = express();
 const PORT = process.env.PORT || 8000;
+/*
+Swagger
+ */
+const swaggerUI = require('swagger-ui-express');
+const swaggerJsDoc = require('swagger-jsdoc');
+const swaggerSpec = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Para Cuando API',
+      version: '1.0.0',
+    },
+    servers: [
+      {
+        url: 'http://localhost:9000',
+      },
+    ],
+  },
+  apis: [`${path.join(__dirname, 'routes')}/*.js`],
+};
 
 /*
 Cors Settings
@@ -41,10 +58,12 @@ Accept Json & form-urlencoded
 */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-/*
-Swagger UI
-*/
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use(
+  '/api-doc',
+  swaggerUI.serve,
+  swaggerUI.setup(swaggerJsDoc(swaggerSpec))
+);
+
 /* 
     Tell everyone the state of your api
 */
