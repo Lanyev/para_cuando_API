@@ -1,51 +1,31 @@
-//Seeder creado
-
-//noten que es igual a una migración!
-
 'use strict';
 const { Op } = require('sequelize');
-
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface /*Sequelize*/) {
+  async up(queryInterface, Sequelize) {
     const transaction = await queryInterface.sequelize.transaction();
     try {
       await queryInterface.bulkInsert(
-        'countries',
+        'publications_types',
         [
           {
             id: '1',
-            name: 'México',
+            name: 'marcas y tiendas',
+            description: 'marcas y tiendas',
             created_at: new Date(),
             updated_at: new Date(),
           },
           {
             id: '2',
-            name: 'Colombia',
+            name: 'artistas y conciertos',
+            description: 'artistas y conciertos',
             created_at: new Date(),
             updated_at: new Date(),
           },
           {
             id: '3',
-            name: 'Peru',
-            created_at: new Date(),
-            updated_at: new Date(),
-          },
-          {
-            id: '4',
-            name: 'Argentina',
-            created_at: new Date(),
-            updated_at: new Date(),
-          },
-          {
-            id: '5',
-            name: 'Uruguay',
-            created_at: new Date(),
-            updated_at: new Date(),
-          },
-          {
-            id: '6',
-            name: 'Estados Unidos',
+            name: 'torneos',
+            description: 'torneos',
             created_at: new Date(),
             updated_at: new Date(),
           },
@@ -60,26 +40,14 @@ module.exports = {
     }
   },
 
-  async down(queryInterface /*Sequelize*/) {
+  async down(queryInterface, Sequelize) {
     const transaction = await queryInterface.sequelize.transaction();
     try {
       await queryInterface.bulkDelete(
-        'countries',
+        'publications_types',
         {
           name: {
-            [Op.or]: ['México'],
-          },
-          name: {
-            [Op.or]: ['Colombia'],
-          },
-          name: {
-            [Op.or]: ['Peru'],
-          },
-          name: {
-            [Op.or]: ['Argentina'],
-          },
-          name: {
-            [Op.or]: ['Uruguay'],
+            [Op.or]: ['marcas y tiendas', 'artistas y conciertos', 'torneos'],
           },
         },
         { transaction }
