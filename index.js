@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 8000;
 Swagger
  */
 const swaggerUI = require('swagger-ui-express');
-const swaggerJsDoc = require('./swagger.json');
+const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerSpec = {
   definition: {
     openapi: '3.0.0',
@@ -59,11 +59,13 @@ Accept Json & form-urlencoded
 */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 app.use(
   '/api-doc',
   swaggerUI.serve,
-  swaggerUI.setup(swaggerJsDoc)
+  swaggerUI.setup(swaggerJsDoc(swaggerSpec))
 );
+
 
 /* 
     Tell everyone the state of your api
