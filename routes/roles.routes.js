@@ -1,9 +1,8 @@
 const express = require('express')
 const router = express.Router()
 
-const passport = require('../libs/passport')
 const { getAllRoles } = require('../controllers/roles.controller')
 
-router.get( '/', /*passport.authenticate('jwt', { session: false }),*/ getAllRoles )
+router.get( '/', getAllRoles )
 
 module.exports = router

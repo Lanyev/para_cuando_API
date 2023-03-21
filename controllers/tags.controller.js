@@ -1,23 +1,33 @@
-const TagsService = require('../services/tags.services');
-const { getPagination, getPagingData } = require('../utils/helpers');
+const TagsService = require('../services/tags.services')
+const { getPagination, getPagingData } = require('../utils/helpers')
 
 const tagsService = new TagsService();
 
 const getTags = async (request, response, next) => {
   try {
-    let query = request.query;
-    let { page, size } = query;
-    const { limit, offset } = getPagination(page, size, '10');
-    query.limit = limit;
-    query.offset = offset;
+    let query = request.query
+    let { page, size } = query
+    const { limit, offset } = getPagination(page, size, '10')
+    query.limit = limit
+    query.offset = offset
 
-    let tags = await tagsService.findAndCount(query);
-    const results = getPagingData(tags, page, limit);
-    return response.json({ results: results });
+    let tags = await tagsService.findAndCount(query)
+    const results = getPagingData(tags, page, limit)
+    return response.json({ results: results })
   } catch (error) {
-    next(error);
+    next(error)
   }
-};
+}
+
+const postTag = async ( request, response, next ) =>{
+  try {
+    let { body } = request;
+    let tag = await tagsService.createTags( body )
+    return response.json({ results: tag })
+  } catch (error) {
+    next(error)
+  }
+}
 
 const getTagById = async (request, response, next) => {
   try {
@@ -40,8 +50,20 @@ const putTag = async (request, response, next) => {
   }
 };
 
+const deleteTag = async (request, response, next) => {
+  try {
+    let { id } = request.tag.id;
+    let tag = await tagsService.removeTag( id );
+    return response.json({ results: tag });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getTags,
+  postTag,
   getTagById,
   putTag,
+  deleteTag
 };

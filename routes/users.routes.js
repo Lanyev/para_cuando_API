@@ -1,23 +1,17 @@
-const express = require('express');
-const router = express.Router();
-
-const passport = require('../libs/passport');
+const express = require('express')
+const router = express.Router()
 
 const {
   getUsers,
   getUserById,
   getMyUser,
   patchUser,
-} = require('../controllers/users.controller');
+} = require('../controllers/users.controller')
 
-router.get('/', getUsers);
+router.get('/', getUsers)
 
-router.get(
-  '/:id',
-  passport.authenticate('jwt', { session: false }),
-  getUserById
-);
+router.get( '/:id', getUserById )
 
-router.put('/:id', patchUser);
+router.put('/:id', patchUser)
 
-module.exports = router;
+module.exports = router

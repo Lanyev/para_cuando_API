@@ -1,18 +1,21 @@
 const express = require('express')
 const router = express.Router()
 
-const passport = require('../libs/passport')
-
 const {
     getTags,
+    postTag,
     getTagById,
-    putTag
+    putTag,
+    deleteTag
 } = require('../controllers/tags.controller')
 
-router.get('/', getTags)
+router.route('/')
+    .get( getTags )
+    .post( postTag )
 
 router.route('/:id')
     .get( getTagById )
     .put( putTag )
+    .delete( deleteTag )
 
 module.exports = router

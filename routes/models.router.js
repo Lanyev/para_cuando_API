@@ -1,22 +1,23 @@
 const express = require('express')
 
-// const isAuthenticatedByPassportJwt = require('../libs/passport')
+const passportAuth = require('../libs/passport')
 
 const routesAuth = require('./auth.routes')
 const routesCities = require('./cities.routes')
 const routesCountries = require('./countries.routes')
+const routesPublicationsTypes = require('./publicationsTypes.routes')
 const routesRoles = require('./roles.routes')
 const routesStates = require('./states.routes')
+const routesTags = require('./tags.routes')
 const routesUsers = require('./users.routes')
 
-const routesPublicationsTypes = require('./publicationsTypes.routes')
-const routesTags = require('./tags.routes')
 
 function routerModels(app) {
   const router = express.Router()
 
   app.use('/api/v1', router)
   router.use('/auth', routesAuth)
+  router.use( passportAuth )
   router.use('/cities', routesCities)
   router.use('/countries', routesCountries)
   router.use('/publications-types', routesPublicationsTypes)

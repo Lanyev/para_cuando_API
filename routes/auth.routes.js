@@ -1,14 +1,12 @@
-const express = require('express');
-const router = express.Router();
+const express = require('express')
+const router = express.Router()
 
-const passport = require('../libs/passport');
-
-const verifySchema = require('../schemas/joiSchema.checker');
+const verifySchema = require('../schemas/joiSchema.checker')
 const {
   signupSchema,
   forgetPasswordSchema,
   restorePasswordSchema,
-} = require('../schemas/auth.schemas');
+} = require('../schemas/auth.schemas')
 
 const {
   signUp,
@@ -16,7 +14,7 @@ const {
   forgetPassword,
   restorePassword,
   userToken,
-} = require('../controllers/auth.controller');
+} = require('../controllers/auth.controller')
 
 /**
  * @swagger
@@ -59,7 +57,7 @@ const {
  *       401:
  *        description: Invalid credentials.
  */
-router.post('/login', logIn);
+router.post('/login', logIn)
 
 /**
  * @swagger
@@ -112,7 +110,7 @@ router.post('/login', logIn);
  *       400:
  *         description: Invalid credentials.
  */
-router.post('/sign-up', verifySchema(signupSchema, 'body'), signUp);
+router.post('/sign-up', verifySchema(signupSchema, 'body'), signUp)
 
 /**
 @swagger
@@ -156,7 +154,7 @@ router.post(
   '/forget-password',
   verifySchema(forgetPasswordSchema, 'body'),
   forgetPassword
-);
+)
 
 /**
  * @swagger
@@ -211,13 +209,12 @@ router.post(
   '/change-password/:token',
   verifySchema(restorePasswordSchema, 'body'),
   restorePassword
-);
+)
 
-router.get('/me', passport.authenticate('jwt', { session: false }), userToken);
+router.get('/me', userToken)
 
 router.get(
   '/testing',
-  passport.authenticate('jwt', { session: false }),
   async (request, response, next) => {
     try {
       return response.status(200).json({
@@ -228,12 +225,12 @@ router.get(
           _sessionManager: request._sessionManager,
           authInfo: request.authInfo,
         },
-      });
+      })
     } catch (error) {
-      console.log(error);
-      next(error);
+      console.log(error)
+      next(error)
     }
   }
-);
+)
 
-module.exports = router;
+module.exports = router
