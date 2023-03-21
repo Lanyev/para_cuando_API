@@ -8,6 +8,7 @@ class UsersService {
   constructor() {}
 
   async findAndCount(query) {
+    console.log({scope:models.Users.scope('view_public')})
     const options = {
       where: {},
     };
@@ -31,7 +32,7 @@ class UsersService {
     //Necesario para el findAndCountAll de Sequelize
     options.distinct = true;
 
-    const users = await models.Users.findAndCountAll(options);
+    const users = await models.Users.scope('view_same_user').findAndCountAll(options);
     return users;
   }
 

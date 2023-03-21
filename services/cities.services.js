@@ -30,8 +30,8 @@ class CitiesService {
     //Necesario para el findAndCountAll de Sequelize
     options.distinct = true
 
-    const states = await models.Cities.findAndCountAll(options)
-    return states
+    const cities = await models.Cities.findAndCountAll(options)
+    return cities
   }
 
   async createCity({name}) {

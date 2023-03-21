@@ -12,8 +12,8 @@ const getAllStates = async ( request, response, next ) => {
         query.limit = limit
         query.offset = offset 
 
-        const countries = await statesService.findAndCount(query)
-        const results = getPagingData(countries, page, limit)
+        const states = await statesService.findAndCount(query)
+        const results = getPagingData(states, page, limit)
         return response.json({ results: results })
         
     } catch (error) {

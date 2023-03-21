@@ -12,8 +12,8 @@ const getAllCities = async ( request, response, next ) => {
         query.limit = limit
         query.offset = offset 
 
-        const countries = await citiesService.findAndCount(query)
-        const results = getPagingData(countries, page, limit)
+        const cities = await citiesService.findAndCount(query)
+        const results = getPagingData(cities, page, limit)
         return response.json({ results: results })
         
     } catch (error) {

@@ -1,18 +1,30 @@
-const express = require('express');
-const routesUsers = require('./users.routes');
+const express = require('express')
 
 // const isAuthenticatedByPassportJwt = require('../libs/passport')
 
-const routesAuth = require('./auth.routes');
-const routesCountries = require('./countries.routes');
+const routesAuth = require('./auth.routes')
+const routesCities = require('./cities.routes')
+const routesCountries = require('./countries.routes')
+const routesRoles = require('./roles.routes')
+const routesStates = require('./states.routes')
+const routesUsers = require('./users.routes')
+
+const routesPublicationsTypes = require('./publicationsTypes.routes')
+const routesTags = require('./tags.routes')
 
 function routerModels(app) {
-  const router = express.Router();
+  const router = express.Router()
 
-  app.use('/api/v1', router);
-  router.use('/auth', routesAuth);
-  router.use('/countries', routesCountries);
-  router.use('/users', routesUsers);
+  app.use('/api/v1', router)
+  router.use('/auth', routesAuth)
+  router.use('/cities', routesCities)
+  router.use('/countries', routesCountries)
+  router.use('/publications-types', routesPublicationsTypes)
+  router.use('/roles', routesRoles)
+  router.use('/states', routesStates)
+  router.use('/tags', routesTags)
+  router.use('/users', routesUsers)
+  
 }
 
-module.exports = routerModels;
+module.exports = routerModels

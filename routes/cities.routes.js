@@ -6,7 +6,7 @@ const passport = require('../libs/passport')
 const { getAllCities} = require('../controllers/cities.controller')
 
 
-router.get( '/', passport.authenticate('jwt', { session: false }), getAllCities )
+router.get( '/',/* passport.authenticate('jwt', { session: false }),*/ getAllCities )
 
 
 module.exports = router
