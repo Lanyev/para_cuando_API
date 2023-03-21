@@ -30,29 +30,10 @@ module.exports = {
             name: 'Peru',
             created_at: new Date(),
             updated_at: new Date(),
-          },
-          {
-            id: '4',
-            name: 'Argentina',
-            created_at: new Date(),
-            updated_at: new Date(),
-          },
-          {
-            id: '5',
-            name: 'Uruguay',
-            created_at: new Date(),
-            updated_at: new Date(),
-          },
-          {
-            id: '6',
-            name: 'Estados Unidos',
-            created_at: new Date(),
-            updated_at: new Date(),
-          },
+          }
         ],
         { transaction }
       );
-
       await transaction.commit();
     } catch (error) {
       await transaction.rollback();
@@ -67,20 +48,12 @@ module.exports = {
         'countries',
         {
           name: {
-            [Op.or]: ['México'],
-          },
-          name: {
-            [Op.or]: ['Colombia'],
-          },
-          name: {
-            [Op.or]: ['Peru'],
-          },
-          name: {
-            [Op.or]: ['Argentina'],
-          },
-          name: {
-            [Op.or]: ['Uruguay'],
-          },
+            [Op.or]: [ 
+              'México', 
+              'Colombia', 
+              'Peru' 
+            ],
+          }
         },
         { transaction }
       );

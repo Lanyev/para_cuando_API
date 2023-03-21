@@ -5,6 +5,7 @@ require('dotenv').config();
 const path = require('path');
 const routerModels = require('./routes/models.router');
 const routerErrorHandler = require('./routes/errorhandler.router');
+
 const app = express();
 const PORT = process.env.PORT || 8000;
 /*
@@ -58,11 +59,13 @@ Accept Json & form-urlencoded
 */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 app.use(
   '/api-doc',
   swaggerUI.serve,
   swaggerUI.setup(swaggerJsDoc(swaggerSpec))
 );
+
 
 /* 
     Tell everyone the state of your api
