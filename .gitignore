@@ -1,3 +1,4 @@
 /node_modules
+/.buildt
 .env
 .env.db.docker
