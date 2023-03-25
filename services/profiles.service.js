@@ -27,6 +27,26 @@ class ProfilesService {
     return profile
   }
 
+  async isAdmin(user_id){
+    let profile = await models.Profiles.scope('no_timestamps').findOne({
+      where:{
+        user_id,
+        role_id:2
+      }
+    })
+    const algo = await models.Users.describe()
+    console.log( Object.entries(algo).map( item => item[0]) )
+    
+    const rol = await models.Roles.scope('no_timestamps').findOne({
+      where:{
+        id: profile.dataValues.role_id
+      }
+    })
+    const {role_id, ...restProfile} = profile.dataValues
+    profile = {...restProfile, rol:rol.dataValues}
+    console.log(profile)
+    return profile ? true : false
+  }
 
 }
 

@@ -15,9 +15,16 @@ module.exports = {
         'julio@academlo.com'
       );
       const adminRole = await rolesService.findRoleByName('admin');
+      const publicRole = await rolesService.findRoleByName('public');
       const profiles = [
         {
-          user_id: adminUser.id,
+          user_id: 'a3579d53-6732-4a66-a2d1-8db135985fe8',
+          role_id: publicRole.id,
+          created_at: new Date(),
+          updated_at: new Date(),
+        },
+        {
+          user_id: 'ddb6790c-387b-4453-8e11-252e1f928b67',//adminUser.id,
           role_id: adminRole.id,
           created_at: new Date(),
           updated_at: new Date(),

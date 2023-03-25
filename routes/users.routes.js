@@ -1,6 +1,8 @@
 const express = require('express')
 const router = express.Router()
 
+const isAdmin = require( '../middlewares/isAdmin.middleware' )
+
 const {
   getUsers,
   getUserById,
@@ -8,9 +10,9 @@ const {
   patchUser,
 } = require('../controllers/users.controller')
 
-router.get('/', getUsers)
+router.get('/', isAdmin,getUsers)
 
-router.get( '/:id', getUserById )
+router.get( '/:id', isAdmin, getUserById )
 
 router.put('/:id', patchUser)
 

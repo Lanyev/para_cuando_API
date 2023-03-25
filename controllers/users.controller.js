@@ -5,6 +5,10 @@ const UserService = new UsersService();
 
 const getUsers = async (request, response, next) => {
   try {
+    const admin = request.admin
+
+    if(!admin) return response.status(401).json({ message: 'Unauthorized' });
+
     let query = request.query;
     let { page, size } = query;
     const { limit, offset } = getPagination(page, size, '10');
@@ -21,14 +25,19 @@ const getUsers = async (request, response, next) => {
 
 const getUserById = async (request, response, next) => {
   try {
+    const admin = request.admin
+    const sameUser = request.sameUser
+    let scope = 'public'
     let { id } = request.params;
     let userId = request.user.id;
-    if (userId === id) {
-      let user = await UserService.getUser(id);
-      return response.json({ results: user });
-    } else {
-      return response.status(401).json({ message: 'Unauthorized' });
-    }
+    if (userId !== id && !admin ) 
+      return response.status(401).json({ message: 'Unauthorized' })
+
+    scope = 'admin'
+    
+    let user = await UserService.getUser(id, scope);
+    return response.json({ results: user });
+   
   } catch (error) {
     next(error);
   }
