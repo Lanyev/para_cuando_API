@@ -6,11 +6,11 @@ const routesAuth = require('./auth.routes');
 const routesCities = require('./cities.routes');
 const routesCountries = require('./countries.routes');
 const routesPublicationsTypes = require('./publicationsTypes.routes');
+const routesPublications = require('./publications.routes');
 const routesRoles = require('./roles.routes');
 const routesStates = require('./states.routes');
 const routesTags = require('./tags.routes');
 const routesUsers = require('./users.routes');
-const routesPublications = require('./publications.routes');
 
 function routerModels(app) {
   const router = express.Router();

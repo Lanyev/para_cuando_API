@@ -5,30 +5,11 @@ require('dotenv').config();
 const path = require('path');
 const routerModels = require('./routes/models.router');
 const routerErrorHandler = require('./routes/errorhandler.router');
+const { swaggerDocs } = require('./swagger.js');
 
 const app = express();
 const PORT = process.env.PORT || 8000;
-/*
-Swagger
- */
-const swaggerUI = require('swagger-ui-express');
-const swaggerJsDoc = require('swagger-jsdoc');
-const swaggerSpec = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'Para Cuando API',
-      version: '1.0.0',
-    },
-    servers: [
-      {
-        url: 'http://localhost:9000',
-      },
-    ],
-  },
-  apis: [`${path.join(__dirname, 'routes')}/*.js`],
-};
-
+swaggerDocs(app, PORT);
 /*
 Cors Settings
 */
@@ -60,15 +41,8 @@ Accept Json & form-urlencoded
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(
-  '/api-doc',
-  swaggerUI.serve,
-  swaggerUI.setup(swaggerJsDoc(swaggerSpec))
-);
-
-
-/* 
-    Tell everyone the state of your api
+/*
+Tell everyone the state of your api
 */
 app.get('/', ({ res }) => {
   return res.json({

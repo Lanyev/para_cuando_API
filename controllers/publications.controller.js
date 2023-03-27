@@ -29,16 +29,6 @@ const getPublicationsById = async (request, response, next) => {
   }
 };
 
-const getMyPublications = async (request, response, next) => {
-  try {
-    let { id } = request.publications.id;
-    let publications = await publicationsService.getPublications(id);
-    return response.json({ results: publications });
-  } catch (error) {
-    next(error);
-  }
-};
-
 const putPublications = async (request, response, next) => {
   try {
     let { id } = request.publications.id;
@@ -53,6 +43,5 @@ const putPublications = async (request, response, next) => {
 module.exports = {
   getPublications,
   getPublicationsById,
-  getMyPublications,
   putPublications,
 };
