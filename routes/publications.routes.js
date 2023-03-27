@@ -13,9 +13,12 @@ const {
 
 router.get('/', getPublications);
 router.get('/:id', getPublicationsById);
+<<<<<<< HEAD
 
 router.use( passportAuth, isAdmin, sameUser )
 
+=======
+>>>>>>> update_repo
 router.put('/:id', putPublications);
 
 module.exports = router;

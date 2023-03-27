@@ -28,17 +28,17 @@ const getPublicationsById = async (request, response, next) => {
   } catch (error) {
     next(error)
   }
-}
+};
 
 const getMyPublications = async (request, response, next) => {
   try {
-    let { id } = request.publications.id
-    let publications = await publicationsService.getPublications(id)
-    return response.json({ results: publications })
+    let { id } = request.publications.id;
+    let publications = await publicationsService.getPublications(id);
+    return response.json({ results: publications });
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
 const putPublications = async (request, response, next) => {
   try {
