@@ -8,9 +8,7 @@ const routerErrorHandler = require('./routes/errorhandler.router');
 
 const app = express();
 const PORT = process.env.PORT || 8000;
-/*
-Swagger
- */
+
 const swaggerUI = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerSpec = {
@@ -29,9 +27,6 @@ const swaggerSpec = {
   apis: [`${path.join(__dirname, 'routes')}/*.js`],
 };
 
-/*
-Cors Settings
-*/
 const whitelist = ['http://localhost:8000'];
 const corsOptions = {
   origin: (origin, callback) => {
@@ -54,22 +49,11 @@ if (process.env.NODE_ENV === 'production') {
   app.use(cors());
 }
 
-/*
-Accept Json & form-urlencoded
-*/
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(
-  '/api-doc',
-  swaggerUI.serve,
-  swaggerUI.setup(swaggerJsDoc(swaggerSpec))
-);
+app.use( '/api-doc', swaggerUI.serve, swaggerUI.setup(swaggerJsDoc(swaggerSpec)));
 
-
-/* 
-    Tell everyone the state of your api
-*/
 app.get('/', ({ res }) => {
   return res.json({
     status: 'Up',
@@ -77,13 +61,7 @@ app.get('/', ({ res }) => {
   });
 });
 
-/*
-Routes
-*/
 routerModels(app);
 routerErrorHandler(app);
 
-app.listen(PORT, () => {
-  //show url in console
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`) )

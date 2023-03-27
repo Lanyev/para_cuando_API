@@ -1,31 +1,36 @@
-const express = require('express');
+const express = require('express')
 
-const passportAuth = require('../libs/passport');
+const passportAuth = require('../libs/passport')
+const isAdmin = require( '../middlewares/isAdmin.middleware' )
+const sameUser = require( '../middlewares/sameUser.middleware' )
 
-const routesAuth = require('./auth.routes');
-const routesCities = require('./cities.routes');
-const routesCountries = require('./countries.routes');
-const routesPublicationsTypes = require('./publicationsTypes.routes');
-const routesRoles = require('./roles.routes');
-const routesStates = require('./states.routes');
-const routesTags = require('./tags.routes');
-const routesUsers = require('./users.routes');
-const routesPublications = require('./publications.routes');
+const routesAuth = require('./auth.routes')
+const routesCities = require('./cities.routes')
+const routesCountries = require('./countries.routes')
+const routesPublicationsTypes = require('./publicationsTypes.routes')
+const routesRoles = require('./roles.routes')
+const routesStates = require('./states.routes')
+const routesTags = require('./tags.routes')
+const routesUsers = require('./users.routes')
+const routesPublications = require('./publications.routes')
 
 function routerModels(app) {
-  const router = express.Router();
+  const router = express.Router()
 
-  app.use('/api/v1', router);
-  router.use('/auth', routesAuth);
-  router.use(passportAuth);
-  router.use('/cities', routesCities);
-  router.use('/countries', routesCountries);
-  router.use('/publications', routesPublications);
-  router.use('/publications-types', routesPublicationsTypes);
-  router.use('/roles', routesRoles);
-  router.use('/states', routesStates);
-  router.use('/tags', routesTags);
-  router.use('/users', routesUsers);
+  app.use('/api/v1', router)
+  router.use('/auth', routesAuth)
+
+  router.use('/publications', routesPublications)
+  
+  router.use( passportAuth, isAdmin, sameUser )
+
+  router.use('/cities', routesCities)
+  router.use('/countries', routesCountries)
+  router.use('/publications-types', routesPublicationsTypes)
+  router.use('/roles', routesRoles)
+  router.use('/states', routesStates)
+  router.use('/tags', routesTags)
+  router.use('/users', routesUsers)
 }
 
-module.exports = routerModels;
+module.exports = routerModels

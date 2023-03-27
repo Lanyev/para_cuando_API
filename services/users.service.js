@@ -8,7 +8,7 @@ class UsersService {
   constructor() {}
 
   async findAndCount(query) {
-    console.log({scope:models.Users.scope('admin')})
+    console.log({scope: await models.Users.scope('public')})
     const options = {
       where: {},
     };

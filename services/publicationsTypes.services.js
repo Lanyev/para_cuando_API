@@ -50,26 +50,26 @@ class PublicationsTypesService {
   }
   //Return Instance if we do not converted to json (or raw:true)
   async getPublicationsTypesOr404(id) {
-    let country = await models.PublicationsTypes.findByPk(id, { raw: true })
-    if (!country) throw new CustomError('Not found PublicationsTypes', 404, 'Not Found')
-    return country
+    let publicationType = await models.PublicationsTypes.findByPk(id, { raw: true })
+    if (!publicationType) throw new CustomError('Not found PublicationsTypes', 404, 'Not Found')
+    return publicationType
   }
 
   //Return not an Instance raw:true | we also can converted to Json instead
   async getPublicationsTypes(id) {
-    let country = await models.PublicationsTypes.findByPk(id)
-    if (!country) throw new CustomError('Not found PublicationsTypes', 404, 'Not Found')
-    return country
+    let publicationType = await models.PublicationsTypes.findByPk(id)
+    if (!publicationType) throw new CustomError('Not found PublicationsTypes', 404, 'Not Found')
+    return publicationType
   }
 
   async updatePublicationsTypes(id, obj) {
     const transaction = await models.sequelize.transaction()
     try {
-      let country = await models.PublicationsTypes.findByPk(id)
+      let publicationType = await models.PublicationsTypes.findByPk(id)
 
-      if (!country) throw new CustomError('Not found PublicationsTypes', 404, 'Not Found')
+      if (!publicationType) throw new CustomError('Not found PublicationsTypes', 404, 'Not Found')
 
-      let updatedPublicationsTypes = await country.update(obj, { transaction })
+      let updatedPublicationsTypes = await publicationType.update(obj, { transaction })
 
       await transaction.commit()
 
@@ -83,15 +83,15 @@ class PublicationsTypesService {
   async removePublicationsTypes(id) {
     const transaction = await models.sequelize.transaction()
     try {
-      let country = await models.PublicationsTypes.findByPk(id)
+      let publicationType = await models.PublicationsTypes.findByPk(id)
 
-      if (!country) throw new CustomError('Not found PublicationsTypes', 404, 'Not Found')
+      if (!publicationType) throw new CustomError('Not found PublicationsTypes', 404, 'Not Found')
 
-      await country.destroy({ transaction })
+      await publicationType.destroy({ transaction })
 
       await transaction.commit()
 
-      return country
+      return publicationType
     } catch (error) {
       await transaction.rollback()
       throw error
