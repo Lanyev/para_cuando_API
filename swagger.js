@@ -308,6 +308,11 @@ const swaggerDocument = {
             description: 'successful operation',
           },
         },
+        security: [
+          {
+            tokenJWT: [],
+          },
+        ],
       },
       put: {
         tags: ['Users'],
@@ -344,6 +349,11 @@ const swaggerDocument = {
             description: 'successful operation',
           },
         },
+        security: [
+          {
+            tokenJWT: [],
+          },
+        ],
       },
     },
     '/users/{userID}/publications': {
@@ -1125,8 +1135,7 @@ const swaggerDocument = {
 const swaggerDocs = (app, port) => {
   app.use('/api/v1/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
   app.get('/api/v1/docs.json', (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.send(swaggerDocument);
+    res.json(swaggerDocument);
   });
   console.log(
     `Version 1 Docs are available on http://localhost:${port}/api/v1/docs`

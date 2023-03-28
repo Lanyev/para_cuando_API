@@ -10,9 +10,7 @@ const { swaggerDocs } = require('./swagger.js');
 const app = express();
 const PORT = process.env.PORT || 8000;
 swaggerDocs(app, PORT);
-/*
-Cors Settings
-*/
+
 const whitelist = ['http://localhost:8000'];
 const corsOptions = {
   origin: (origin, callback) => {
@@ -35,15 +33,9 @@ if (process.env.NODE_ENV === 'production') {
   app.use(cors());
 }
 
-/*
-Accept Json & form-urlencoded
-*/
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-/*
-Tell everyone the state of your api
-*/
 app.get('/', ({ res }) => {
   return res.json({
     status: 'Up',
@@ -51,13 +43,7 @@ app.get('/', ({ res }) => {
   });
 });
 
-/*
-Routes
-*/
 routerModels(app);
 routerErrorHandler(app);
 
-app.listen(PORT, () => {
-  //show url in console
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`) )
