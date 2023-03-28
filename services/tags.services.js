@@ -50,26 +50,26 @@ class TagsService {
   }
   //Return Instance if we do not converted to json (or raw:true)
   async getTagOr404(id) {
-    let country = await models.Tags.findByPk(id, { raw: true })
-    if (!country) throw new CustomError('Not found Tags', 404, 'Not Found')
-    return country
+    let tag = await models.Tags.findByPk(id, { raw: true })
+    if (!tag) throw new CustomError('Not found Tags', 404, 'Not Found')
+    return tag
   }
 
   //Return not an Instance raw:true | we also can converted to Json instead
   async getTag(id) {
-    let country = await models.Tags.findByPk(id)
-    if (!country) throw new CustomError('Not found Tags', 404, 'Not Found')
-    return country
+    let tag = await models.Tags.findByPk(id)
+    if (!tag) throw new CustomError('Not found Tags', 404, 'Not Found')
+    return tag
   }
 
   async updateTag(id, obj) {
     const transaction = await models.sequelize.transaction()
     try {
-      let country = await models.Tags.findByPk(id)
+      let tag = await models.Tags.findByPk(id)
 
-      if (!country) throw new CustomError('Not found Tags', 404, 'Not Found')
+      if (!tag) throw new CustomError('Not found Tags', 404, 'Not Found')
 
-      let updatedTags = await country.update(obj, { transaction })
+      let updatedTags = await tag.update(obj, { transaction })
 
       await transaction.commit()
 
@@ -83,15 +83,15 @@ class TagsService {
   async removeTag(id) {
     const transaction = await models.sequelize.transaction()
     try {
-      let country = await models.Tags.findByPk(id)
+      let tag = await models.Tags.findByPk(id)
 
-      if (!country) throw new CustomError('Not found Tagss', 404, 'Not Found')
+      if (!tag) throw new CustomError('Not found Tagss', 404, 'Not Found')
 
-      await country.destroy({ transaction })
+      await tag.destroy({ transaction })
 
       await transaction.commit()
 
-      return country
+      return tag
     } catch (error) {
       await transaction.rollback()
       throw error

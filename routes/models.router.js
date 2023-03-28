@@ -4,17 +4,6 @@ const passportAuth = require('../libs/passport')
 const isAdmin = require( '../middlewares/isAdmin.middleware' )
 const sameUser = require( '../middlewares/sameUser.middleware' )
 
-<<<<<<< HEAD
-const routesAuth = require('./auth.routes')
-const routesCities = require('./cities.routes')
-const routesCountries = require('./countries.routes')
-const routesPublicationsTypes = require('./publicationsTypes.routes')
-const routesRoles = require('./roles.routes')
-const routesStates = require('./states.routes')
-const routesTags = require('./tags.routes')
-const routesUsers = require('./users.routes')
-const routesPublications = require('./publications.routes')
-=======
 const routesAuth = require('./auth.routes');
 const routesCities = require('./cities.routes');
 const routesCountries = require('./countries.routes');
@@ -24,7 +13,6 @@ const routesRoles = require('./roles.routes');
 const routesStates = require('./states.routes');
 const routesTags = require('./tags.routes');
 const routesUsers = require('./users.routes');
->>>>>>> update_repo
 
 function routerModels(app) {
   const router = express.Router()

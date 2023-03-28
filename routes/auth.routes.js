@@ -15,6 +15,7 @@ const {
   restorePassword,
   userToken,
 } = require('../controllers/auth.controller');
+const passport = require('../libs/passport');
 
 router.post('/login', logIn);
 
@@ -32,7 +33,7 @@ router.post(
   restorePassword
 );
 
-router.get('/me', userToken);
+router.get('/me', passport, userToken);
 
 router.get('/testing', async (request, response, next) => {
   try {

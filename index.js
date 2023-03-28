@@ -9,30 +9,8 @@ const { swaggerDocs } = require('./swagger.js');
 
 const app = express();
 const PORT = process.env.PORT || 8000;
-/*
-Swagger
- */
-const swaggerUI = require('swagger-ui-express');
-const swaggerJsDoc = require('swagger-jsdoc');
-const swaggerSpec = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'Para Cuando API',
-      version: '1.0.0',
-    },
-    servers: [
-      {
-        url: 'http://localhost:9000',
-      },
-    ],
-  },
-  apis: [`${path.join(__dirname, 'routes')}/*.js`],
-};
+swaggerDocs(app, PORT);
 
-/*
-Cors Settings
-*/
 const whitelist = ['http://localhost:8000'];
 const corsOptions = {
   origin: (origin, callback) => {
