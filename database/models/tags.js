@@ -12,7 +12,9 @@ module.exports = (sequelize, DataTypes) => {
   Tags.init({
     id: {
       type: DataTypes.INTEGER,
-      primaryKey: true
+      primaryKey: true,
+      autoIncrement: true,
+      allowNull:false
     },
     name: DataTypes.STRING,
     description: DataTypes.STRING,

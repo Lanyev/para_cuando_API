@@ -21,6 +21,7 @@ const getPublicationsTypes = async (request, response, next) => {
 
 const getPublicationsTypesById = async (request, response, next) => {
   try {
+    console.log({estdo:'entro'})
     let { id } = request.params
     let publicationsTypes = await publicationsTypesService.getPublicationsTypes(id)
     return response.json({ results: publicationsTypes })    
@@ -43,7 +44,7 @@ const putPublicationsTypes = async (request, response, next) => {
   try {
     const admin = request.admin
     if(!admin) return response.status(401).json({ message: 'Unauthorized' })
-    const { id } = request.params.id
+    const { id } = request.params
     let { body } = request
     const publicationsTypes = await publicationsTypesService.updatePublicationsTypes(id, body)
     return response.json({ message: 'Success update' })
