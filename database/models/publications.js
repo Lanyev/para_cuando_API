@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
   Publications.init(
     {
       id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         primaryKey: true,
       },
       user_id: {
@@ -36,13 +36,13 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
       },
       description: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
       },
       content: {
         type: DataTypes.TEXT,
       },
       reference_link: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING,
       },
     },
     {
@@ -84,11 +84,6 @@ module.exports = (sequelize, DataTypes) => {
             'description',
             'reference_link',
           ],
-        },
-      },
-      hooks: {
-        beforeCreate: (publication, options) => {
-          publication.id = null;
         },
       },
     }
