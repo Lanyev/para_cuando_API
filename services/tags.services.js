@@ -34,11 +34,13 @@ class TagsService {
     return states
   }
 
-  async createTags({name}) {
+  async createTags({name, description, image_url}) {
     const transaction = await models.sequelize.transaction()
     try {
       let newTags = await models.Tags.create({
-        name
+        name,
+        description,
+      image_url
       }, { transaction })
 
       await transaction.commit()
@@ -62,14 +64,14 @@ class TagsService {
     return tag
   }
 
-  async updateTag(id, obj) {
+  async updateTag(id, {name, description}) {
     const transaction = await models.sequelize.transaction()
     try {
       let tag = await models.Tags.findByPk(id)
 
       if (!tag) throw new CustomError('Not found Tags', 404, 'Not Found')
 
-      let updatedTags = await tag.update(obj, { transaction })
+      let updatedTags = await tag.update({name, description}, { transaction })
 
       await transaction.commit()
 

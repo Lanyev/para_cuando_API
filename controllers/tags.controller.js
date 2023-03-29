@@ -41,7 +41,7 @@ const getTagById = async (request, response, next) => {
 
 const putTag = async (request, response, next) => {
   try {
-    let { id } = request.tag.id;
+    let { id } = request.params;
     let { body } = request;
     let tag = await tagsService.updateTag(id, body);
     return response.json({ results: tag });
@@ -52,7 +52,7 @@ const putTag = async (request, response, next) => {
 
 const deleteTag = async (request, response, next) => {
   try {
-    let { id } = request.tag.id;
+    let { id } = request.params;
     let tag = await tagsService.removeTag( id );
     return response.json({ results: tag });
   } catch (error) {

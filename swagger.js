@@ -461,6 +461,11 @@ const swaggerDocument = {
             description: 'successful operation',
           },
         },
+        security: [
+          {
+            tokenJWT: [],
+          },
+        ],
       },
       put: {
         tags: ['Publications Types'],
@@ -495,6 +500,11 @@ const swaggerDocument = {
             description: 'successful operation',
           },
         },
+        security: [
+          {
+            tokenJWT: [],
+          },
+        ],
       },
     },
     '/publications/': {
@@ -1133,8 +1143,8 @@ const swaggerDocument = {
 };
 
 const swaggerDocs = (app, port) => {
-  app.use('/api/v1/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-  app.get('/api/v1/docs.json', (req, res) => {
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+  app.get('/api-docs/docs.json', (req, res) => {
     res.json(swaggerDocument);
   });
   console.log(
