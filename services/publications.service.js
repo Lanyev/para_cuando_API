@@ -76,7 +76,10 @@ class PublicationsTypesService {
   async updatePublications(id, { name }) {
     const transaction = await models.sequelize.transaction();
     try {
-      let publications = await this.getPublicationsOr404(id);
+      let publications = await models.Publications.findByPk(id);
+      if (!publications) {
+        throw new CustomError('Publication not found', 404);
+      }
       publications.name = name;
       await publications.save({ transaction });
       await transaction.commit();
@@ -90,7 +93,10 @@ class PublicationsTypesService {
   async deletePublications(id) {
     const transaction = await models.sequelize.transaction();
     try {
-      let publications = await this.getPublicationsOr404(id);
+      let publications = await models.Publications.findByPk(id);
+      if (!publications) {
+        throw new CustomError('Publication not found', 404);
+      }
       await publications.destroy({ transaction });
       await transaction.commit();
       return publications;

@@ -10,6 +10,7 @@ const {
   getPublicationsById,
   putPublications,
   createPublications,
+  deletePublications,
 } = require('../controllers/publications.controller');
 
 router.get('/', getPublications);
@@ -20,5 +21,7 @@ router.post('/', passportAuth, isAdmin, sameUser, createPublications);
 router.use(passportAuth, isAdmin, sameUser);
 
 router.put('/:id', putPublications);
+
+router.delete('/:id', deletePublications);
 
 module.exports = router;

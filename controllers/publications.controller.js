@@ -22,8 +22,7 @@ const getPublications = async (request, response, next) => {
 const getPublicationsById = async (request, response, next) => {
   try {
     let { id } = request.params;
-    let publications = await publicationsService.getPublicationsOr404(id);
-
+    let publications = await publicationsService.getPublications(id);
     return response.json({ results: publications });
   } catch (error) {
     next(error);
@@ -70,10 +69,21 @@ const putPublications = async (request, response, next) => {
   }
 };
 
+const deletePublications = async (request, response, next) => {
+  try {
+    const { id } = request.params;
+    const publications = await publicationsService.deletePublications(id);
+    return response.json({ results: publications });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getPublications,
   getPublicationsById,
   getMyPublications,
   createPublications,
   putPublications,
+  deletePublications,
 };
