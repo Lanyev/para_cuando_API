@@ -40,7 +40,7 @@ class TagsService {
       let newTags = await models.Tags.create({
         name,
         description,
-      image_url
+        image_url
       }, { transaction })
 
       await transaction.commit()
@@ -88,6 +88,8 @@ class TagsService {
       let tag = await models.Tags.findByPk(id)
 
       if (!tag) throw new CustomError('Not found Tagss', 404, 'Not Found')
+      
+      if (tag.image_url) throw new CustomError('Image Tag is on Cloud, must be deleted first', 400, 'Bad Request')
 
       await tag.destroy({ transaction })
 

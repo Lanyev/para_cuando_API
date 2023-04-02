@@ -11,9 +11,14 @@ module.exports = {
           primaryKey: true,
           type: Sequelize.INTEGER
         },
+        name: {
+          allowNull: false,
+          type: Sequelize.STRING,
+          unique: true
+        },
         country_id: {
+          allowNull: false,
           type: Sequelize.INTEGER,
-          allowNull: true,
           foreignKey: true,
           references: {
             model: 'countries',
@@ -22,18 +27,18 @@ module.exports = {
           onUpdate: 'CASCADE',
           onDelete: 'RESTRICT'
         },
-        name: {
-          type: Sequelize.STRING
-        },
-        created_at: {
+        createdAt: {
           allowNull: false,
-          type: Sequelize.DATE
+          type: Sequelize.DATE,
+          field: 'created_at'
         },
-        updated_at: {
+        updatedAt: {
           allowNull: false,
-          type: Sequelize.DATE
+          type: Sequelize.DATE,
+          field: 'updated_at'
         }
-      }, { transaction })
+      }, { transaction });
+
       await transaction.commit()
     } catch (error) {
       await transaction.rollback()
@@ -41,6 +46,13 @@ module.exports = {
     }
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('states');
+    const transaction = await queryInterface.sequelize.transaction()
+    try {
+      await queryInterface.dropTable('states', { transaction })
+      await transaction.commit()
+    } catch (error) {
+      await transaction.rollback()
+      throw error
+    }
   }
 };

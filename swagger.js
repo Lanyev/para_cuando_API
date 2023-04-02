@@ -1143,10 +1143,10 @@ const swaggerDocument = {
 };
 
 const swaggerDocs = (app, port) => {
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-  app.get('/api-docs/docs.json', (req, res) => {
+  app.get('/api-docs/json', (req, res) => {
     res.json(swaggerDocument);
   });
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
   console.log(
     `Version 1 Docs are available on http://localhost:${port}/api-docs`
   );

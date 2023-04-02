@@ -73,14 +73,29 @@ class PublicationsTypesService {
     return publication;
   }
 
-  async updatePublications(id, { name }) {
+  async updatePublications(id, { 
+    title,
+    description,
+    content,
+    city_id,
+    reference_link,
+    user_id,
+    publication_type_id, }) {
     const transaction = await models.sequelize.transaction();
     try {
       let publications = await models.Publications.findByPk(id);
       if (!publications) {
         throw new CustomError('Publication not found', 404);
       }
-      publications.name = name;
+      publications.name = {
+        title,
+        description,
+        content,
+        city_id,
+        reference_link,
+        user_id,
+        publication_type_id
+      };
       await publications.save({ transaction });
       await transaction.commit();
       return publications;

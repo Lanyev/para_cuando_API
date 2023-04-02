@@ -13,7 +13,7 @@ const getPublications = async (request, response, next) => {
 
     let publications = await publicationsService.findAndCount(query);
     const results = getPagingData(publications, page, limit);
-    return response.json({ results: results });
+    return response.json({ results });
   } catch (error) {
     next(error);
   }
@@ -72,8 +72,13 @@ const putPublications = async (request, response, next) => {
 const deletePublications = async (request, response, next) => {
   try {
     const { id } = request.params;
+    const admin = request.admin
+    const sameUser = request.isSameUser( id )
+    
+    if( !admin && !sameUser ) return response.status(401).json({ message: 'Unauthorized' })
+
     const publications = await publicationsService.deletePublications(id);
-    return response.json({ results: publications });
+    return response.status(201).json({ results: publications });
   } catch (error) {
     next(error);
   }

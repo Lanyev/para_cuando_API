@@ -57,7 +57,7 @@ const patchUser = async (request, response, next) => {
     let { id } = request.user
     
     if (id !== request.params.id) 
-      return response.status(401).json({ message: 'Unauthorized' })
+      return response.status(403).json({ message: 'Unauthorized' })
       
     let { body } = request
     let user = await UserService.updateUser(id, body)

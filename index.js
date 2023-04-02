@@ -46,4 +46,8 @@ app.get('/', ({ res }) => {
 routerModels(app);
 routerErrorHandler(app);
 
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`) )
+if (process.env.NODE_ENV != 'test') {
+  app.listen(PORT, () => console.log(`S erver running on http://localhost:${PORT}`) )
+}
+
+module.exports = {app}
