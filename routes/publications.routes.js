@@ -3,7 +3,7 @@ const router = express.Router();
 
 const passportAuth = require('../libs/passport');
 const isAdmin = require('../middlewares/isAdmin.middleware');
-const sameUser = require('../middlewares/sameUser.middleware');
+const isSameUser = require('../middlewares/isSameUser.middleware');
 
 const {
   getPublications,
@@ -13,15 +13,16 @@ const {
   deletePublications,
 } = require('../controllers/publications.controller');
 
-router.get('/', getPublications);
-router.get('/:id', getPublicationsById);
+router.route('/')
+  .get(getPublications)
+  .post( passportAuth, isAdmin, isSameUser, createPublications);
+  
+  router.route('/:id')
+    .get(getPublicationsById)
+    .put(passportAuth, isAdmin, isSameUser, putPublications)
+    .delete(passportAuth, isAdmin, isSameUser, deletePublications);
 
-router.post('/', passportAuth, isAdmin, sameUser, createPublications);
 
-router.use(passportAuth, isAdmin, sameUser);
 
-router.put('/:id', putPublications);
-
-router.delete('/:id', deletePublications);
 
 module.exports = router;

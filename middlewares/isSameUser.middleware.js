@@ -1,4 +1,4 @@
-const sameUser = async (request, _response, next)  => {
+const isSameUser = async (request, _response, next)  => {
     try {
         let userId = request.user.id
         let isSameUser = (paramsId) => paramsId == userId
@@ -10,4 +10,4 @@ const sameUser = async (request, _response, next)  => {
     }
 }
 
-module.exports = sameUser
+module.exports = isSameUser

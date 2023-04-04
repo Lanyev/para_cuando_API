@@ -21,9 +21,14 @@ const getTags = async (request, response, next) => {
 
 const postTag = async ( request, response, next ) =>{
   try {
+    const admin = request.admin
+
+    if ( !admin ) 
+      return response.status(403).json({ message: 'Unauthorized' })
+
     let { body } = request;
     let tag = await tagsService.createTags( body )
-    return response.json({ results: tag })
+    return response.status(201).json({ results: tag })
   } catch (error) {
     next(error)
   }
@@ -41,6 +46,11 @@ const getTagById = async (request, response, next) => {
 
 const putTag = async (request, response, next) => {
   try {
+    const admin = request.admin
+    
+    if ( !admin ) 
+      return response.status(403).json({ message: 'Unauthorized' })
+
     let { id } = request.params;
     let { body } = request;
     let tag = await tagsService.updateTag(id, body);
@@ -52,9 +62,14 @@ const putTag = async (request, response, next) => {
 
 const deleteTag = async (request, response, next) => {
   try {
+    const admin = request.admin
+
+    if ( !admin ) 
+      return response.status(403).json({ message: 'Unauthorized' })
+
     let { id } = request.params;
     let tag = await tagsService.removeTag( id );
-    return response.json({ results: tag });
+    return response.json({ results:tag });
   } catch (error) {
     next(error);
   }

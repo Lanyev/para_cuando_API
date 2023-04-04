@@ -2,7 +2,7 @@ const express = require('express')
 
 const passportAuth = require('../libs/passport')
 const isAdmin = require( '../middlewares/isAdmin.middleware' )
-const sameUser = require( '../middlewares/sameUser.middleware' )
+const isSameUser = require( '../middlewares/isSameUser.middleware' )
 
 const routesAuth = require('./auth.routes');
 const routesCities = require('./cities.routes');
@@ -22,7 +22,7 @@ function routerModels(app) {
 
   router.use('/publications', routesPublications)
   
-  router.use( passportAuth, isAdmin, sameUser )
+  router.use( passportAuth, isAdmin, isSameUser )
 
   router.use('/cities', routesCities)
   router.use('/countries', routesCountries)
