@@ -8,7 +8,6 @@ class UsersService {
   constructor() {}
 
   async findAndCount(query) {
-    console.log({scope: await models.Users.scope('public')})
     const options = {
       where: {},
     }
@@ -84,7 +83,10 @@ class UsersService {
       where:{
         id
       },
-      include: models.Roles
+      include: [{
+        model: models.Tags,
+        as: 'interests'
+      }]
     })
     if (!user) throw new CustomError('Not found User', 404, 'Not Found')
     return user

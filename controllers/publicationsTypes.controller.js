@@ -11,9 +11,10 @@ const getPublicationsTypes = async (request, response, next) => {
     query.limit = limit
     query.offset = offset
 
-    let publicationsTypes = await publicationsTypesService.findAndCount(query)
+    const publicationsTypes = await publicationsTypesService.findAndCount(query)
     const results = getPagingData(publicationsTypes, page, limit)
-    return response.json({ results: results })
+    return response.json( {results} )
+
   } catch (error) {
     next(error)
   }
@@ -21,10 +22,9 @@ const getPublicationsTypes = async (request, response, next) => {
 
 const getPublicationsTypesById = async (request, response, next) => {
   try {
-    console.log({estdo:'entro'})
     let { id } = request.params
-    let publicationsTypes = await publicationsTypesService.getPublicationsTypes(id)
-    return response.json({ results: publicationsTypes })    
+    let results = await publicationsTypesService.getPublicationsTypes(id)
+    return response.json({ results })    
   } catch (error) {
     next(error)
   }
@@ -43,12 +43,13 @@ const getMyPublicationsTypes = async (request, response, next) => {
 const putPublicationsTypes = async (request, response, next) => {
   try {
     const admin = request.admin
-    if(!admin) return response.status(401).json({ message: 'Unauthorized' })
+    if(!admin) return response.status(403).json({ message: 'Unauthorized' })
     const { id } = request.params
     let { body } = request
     const publicationsTypes = await publicationsTypesService.updatePublicationsTypes(id, body)
-    return response.json({ message: 'Success update' })
+    return response.json({ message: 'Success Update', })
   } catch (error) {
+    console.log({Error:'Entro Aqui'})
     next(error)
   }
 }

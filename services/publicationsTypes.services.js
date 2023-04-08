@@ -30,14 +30,14 @@ class PublicationsTypesService {
     //Necesario para el findAndCountAll de Sequelize
     options.distinct = true
 
-    const states = await models.PublicationsTypes.findAndCountAll(options)
+    const states = await models.PublicationTypes.findAndCountAll(options)
     return states
   }
 
   async createPublicationsTypes({name}) {
     const transaction = await models.sequelize.transaction()
     try {
-      let newPublicationsTypes = await models.PublicationsTypes.create({
+      let newPublicationsTypes = await models.PublicationTypes.create({
         name
       }, { transaction })
 
@@ -50,14 +50,14 @@ class PublicationsTypesService {
   }
   //Return Instance if we do not converted to json (or raw:true)
   async getPublicationsTypesOr404(id) {
-    let publicationType = await models.PublicationsTypes.findByPk(id, { raw: true })
+    let publicationType = await models.PublicationTypes.findByPk(id, { raw: true })
     if (!publicationType) throw new CustomError('Not found PublicationsTypes', 404, 'Not Found')
     return publicationType
   }
 
   //Return not an Instance raw:true | we also can converted to Json instead
   async getPublicationsTypes(id) {
-    let publicationType = await models.PublicationsTypes.findByPk(id)
+    let publicationType = await models.PublicationTypes.findByPk(id)
     if (!publicationType) throw new CustomError('Not found PublicationsTypes', 404, 'Not Found')
     return publicationType
   }
@@ -65,7 +65,7 @@ class PublicationsTypesService {
   async updatePublicationsTypes(id, obj) {
     const transaction = await models.sequelize.transaction()
     try {
-      let publicationType = await models.PublicationsTypes.findByPk(id)
+      let publicationType = await models.PublicationTypes.findByPk(id)
 
       if (!publicationType) throw new CustomError('Not found PublicationsTypes', 404, 'Not Found')
 
@@ -83,7 +83,7 @@ class PublicationsTypesService {
   async removePublicationsTypes(id) {
     const transaction = await models.sequelize.transaction()
     try {
-      let publicationType = await models.PublicationsTypes.findByPk(id)
+      let publicationType = await models.PublicationTypes.findByPk(id)
 
       if (!publicationType) throw new CustomError('Not found PublicationsTypes', 404, 'Not Found')
 
