@@ -6,9 +6,8 @@ const UserService = new UsersService()
 const getUsers = async (request, response, next) => {
   try {
     const admin = request.admin
-    console.log({admin})
 
-    if(!admin) return response.status(401).json({ message: 'Unauthorized' })
+    if(!admin) return response.status(403).json({ message: 'Unauthorized' })
 
     let query = request.query
     let { page, size } = query
@@ -34,7 +33,7 @@ const getUserById = async (request, response, next) => {
     if (sameUser || admin ) 
       scope = 'admin'
 
-    let user = await UserService.getAuthUserOr404(id, scope)
+    let user = await UserService.getUser(id, scope)
     return response.json({ results: user })
    
   } catch (error) {

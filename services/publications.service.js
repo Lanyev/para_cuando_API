@@ -38,7 +38,7 @@ class PublicationsTypesService {
     title,
     description,
     content,
-    city_id,
+    city_id = 1,
     reference_link,
     user_id,
     publication_type_id,
@@ -70,6 +70,7 @@ class PublicationsTypesService {
   //Return not an Instance raw:true | we also can converted to Json instead
   async getPublications(id) {
     let publication = await models.Publications.findByPk(id);
+    if (!publication) throw new CustomError('Not found User', 404, 'Not Found');
     return publication;
   }
 

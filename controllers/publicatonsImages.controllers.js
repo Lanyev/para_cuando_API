@@ -1,3 +1,7 @@
+const PublicationImagesService = require( '../services/publicatonsImages.service' )
+
+const publicationImagesService = new PublicationImagesService()
+
 const uploadImagePublication = async (request, response, next) => {
   
     const publicationID = request.params.id;
@@ -96,3 +100,8 @@ const uploadImagePublication = async (request, response, next) => {
       next(error)
     }
   }
+
+module.exports = {
+  uploadImagePublication,
+  removePublicationImage
+}

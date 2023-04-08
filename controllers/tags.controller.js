@@ -69,7 +69,7 @@ const deleteTag = async (request, response, next) => {
 
     let { id } = request.params;
     let tag = await tagsService.removeTag( id );
-    return response.json({ results:tag });
+    return response.json({ results:tag, message: 'removed' });
   } catch (error) {
     next(error);
   }

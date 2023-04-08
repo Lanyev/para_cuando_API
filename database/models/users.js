@@ -7,6 +7,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Users.belongsTo(models.Countries, { as: 'country', foreignKey: 'country_id' })
       Users.hasMany(models.Profiles, { as: 'profiles', foreignKey: 'user_id' })
+      Users.belongsToMany( models.Tags, { as: 'interests', through: 'users_tags', foreignKey: 'user_id'} )
     }
   }
   Users.init({
@@ -67,10 +68,10 @@ module.exports = (sequelize, DataTypes) => {
     timestamps: true,
     scopes: {
       // view_public: {attributes: ['id', 'first_name', 'last_name', 'country_id', 'image_url']},
-      // view_same_user: {attributes: ['id', 'first_name', 'last_name', 'country_id', 'image_url','email', 'username', 'code_phone', 'phone']},
       // auth_flow: {attributes: ['id', 'first_name', 'last_name', 'email', 'username',]},
+      public: { attributes: [ 'id', 'first_name', 'last_name', 'image_url'] },
       view_me: {attributes: ['id', 'first_name', 'last_name', 'email', 'username','image_url']},
-      public: { attributes: [ 'first_name', 'last_name', 'image_url'] },
+      view_same_user: {attributes: ['id', 'first_name', 'last_name', 'country_id', 'image_url','email', 'username', 'code_phone', 'phone']},
       admin: { attributes: { exclude: [ 'password', 'token' ] } }
     },
     hooks: {
