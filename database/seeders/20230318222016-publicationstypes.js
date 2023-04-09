@@ -6,7 +6,7 @@ module.exports = {
     const transaction = await queryInterface.sequelize.transaction();
     try {
       await queryInterface.bulkInsert(
-        'publications_types',
+        'publication_types',
         [
           {
             id: '1',
@@ -44,7 +44,7 @@ module.exports = {
     const transaction = await queryInterface.sequelize.transaction();
     try {
       await queryInterface.bulkDelete(
-        'publications_types',
+        'publication_types',
         {
           name: {
             [Op.or]: ['marcas y tiendas', 'artistas y conciertos', 'torneos'],

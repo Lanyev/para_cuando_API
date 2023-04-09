@@ -356,6 +356,107 @@ const swaggerDocument = {
         ],
       },
     },
+    '/users/{userID}/add-image': {
+      post: {
+        tags: ['Users'],
+        summary: 'Añade una imagen a un usuario',
+        description: 'Añade una imagen a un usuario',
+        parameters: [
+          {
+            name: 'userID',
+            in: 'path',
+            description: 'ID del usuario a retornar',
+            required: true,
+            schema: {
+              type: 'string',
+              format: 'uuid',
+            },
+          },
+        ],
+        requestBody: {
+          content: {
+            'multipart/form-data': {
+              schema: {
+                type: 'object',
+                properties: {
+                  image: {
+                    type: 'string',
+                    format: 'binary',
+                  },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: 'successful operation',
+          },
+        },
+      },
+    },
+    '/users/{userID}/remove-image': {
+      delete: {
+        tags: ['Users'],
+        summary: 'Elimina una imagen de un usuario',
+        description: 'Elimina una imagen de un usuario y de la base de datos',
+        parameters: [
+          {
+            name: 'userID',
+            in: 'path',
+            description: 'ID del usuario a retornar',
+            required: true,
+            schema: {
+              type: 'string',
+              format: 'uuid',
+            },
+          },
+        ],
+        responses: {
+          200: {
+            description: 'successful operation',
+          },
+        },
+      },
+    },
+    '/users/{userID}/votes': {
+      get: {
+        tags: ['Users'],
+        summary: 'Retorna las publicaciones en donde un usuario votó',
+        description: 'Retorna las publicaciones en donde un usuario votó',
+        operationId: 'getUserVotes',
+        parameters: [
+          {
+            in: 'path',
+            name: 'userID',
+            description: 'ID del usuario a retornar',
+            required: true,
+            schema: {
+              type: 'string',
+              format: 'uuid',
+            },
+          },
+          {
+            in: 'query',
+            name: 'page',
+            description: 'En que vista de la paginación habrá que mostrar.',
+            schema: {
+              type: 'string',
+            },
+          },
+        ],
+        responses: {
+          200: {
+            description: 'Vista Paginada',
+          },
+        },
+        security: [
+          {
+            tokenJWT: [],
+          },
+        ],
+      },
+    },
     '/users/{userID}/publications': {
       get: {
         tags: ['Users'],
@@ -572,7 +673,7 @@ const swaggerDocument = {
           },
           {
             in: 'query',
-            name: 'publications_types_ids',
+            name: 'publication_types_ids',
             description: 'Se podrá filtrar por este campo del esquema.',
             schema: {
               type: 'string',
@@ -668,6 +769,129 @@ const swaggerDocument = {
             name: 'publicationID',
             in: 'path',
             description: 'ID de la publicación',
+            required: true,
+            schema: {
+              type: 'string',
+              format: 'integer',
+            },
+          },
+        ],
+        responses: {
+          200: {
+            description: 'successful operation',
+          },
+        },
+        security: [
+          {
+            tokenJWT: [],
+          },
+        ],
+      },
+    },
+    '/publications/{publicationID}/vote': {
+      post: {
+        tags: ['Publications'],
+        summary: 'Añade un voto a una publicación por ID',
+        description:
+          'Crea un voto a una publicación, es necesario estar autenticado, si ya tiene un voto lo borra y si no tiene lo crea',
+        operationId: 'votePublicationById',
+        parameters: [
+          {
+            name: 'publicationID',
+            in: 'path',
+            description: 'ID de la publicación',
+            required: true,
+            schema: {
+              type: 'string',
+              format: 'integer',
+            },
+          },
+        ],
+        responses: {
+          200: {
+            description: 'successful operation',
+          },
+          201: {
+            description: 'successful operation',
+          },
+        },
+        security: [
+          {
+            tokenJWT: [],
+          },
+        ],
+      },
+    },
+    '/publications/{publicationID}/add-image': {
+      post: {
+        tags: ['Publications'],
+        summary: 'Añade imagenes a la publicación',
+        description:
+          'Añade un máximo de 3 imágenes a la publicación. El orden se llena de acuerdo a los espacios vacíos automáticamente',
+        operationId: 'addImagePublicationById',
+        parameters: [
+          {
+            name: 'publicationID',
+            in: 'path',
+            description: 'ID de la publicación',
+            required: true,
+            schema: {
+              type: 'string',
+              format: 'integer',
+            },
+          },
+        ],
+        requestBody: {
+          content: {
+            'multipart/form-data': {
+              schema: {
+                type: 'object',
+                properties: {
+                  images: {
+                    type: 'array',
+                    items: {
+                      type: 'string',
+                      format: 'binary',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          201: {
+            description: 'successful operation',
+          },
+        },
+        security: [
+          {
+            tokenJWT: [],
+          },
+        ],
+      },
+    },
+    '/publications/{publicationID}/remove-image/{order}': {
+      delete: {
+        tags: ['Publications'],
+        summary: 'Remueve la imagen de una publicación',
+        description: 'Borrará la imagen seleccionada de la publicación',
+        operationId: 'removeImagePublicationByIdAndOrder',
+        parameters: [
+          {
+            name: 'publicationID',
+            in: 'path',
+            description: 'ID de la publicación',
+            required: true,
+            schema: {
+              type: 'string',
+              format: 'integer',
+            },
+          },
+          {
+            name: 'order',
+            in: 'path',
+            description: 'Order de la imagen para identificarla',
             required: true,
             schema: {
               type: 'string',
@@ -855,6 +1079,47 @@ const swaggerDocument = {
         ],
       },
     },
+    '/tags/{tagID}/publications/': {
+      get: {
+        tags: ['Tags'],
+        summary: 'Devuelve las publicaciones asociadas al tag',
+        description: 'Retorna las publicaciones asociadas al tag',
+        operationId: 'getPublicationsByTagId',
+        parameters: [
+          {
+            name: 'tagID',
+            in: 'path',
+            description: 'ID del tipo de tag',
+            required: true,
+            schema: {
+              type: 'string',
+              format: 'integer',
+            },
+          },
+          {
+            in: 'query',
+            name: 'page',
+            description: 'En que vista de la paginación habrá que mostrar.',
+            schema: {
+              type: 'string',
+            },
+          },
+          {
+            in: 'query',
+            name: 'size',
+            description: 'El número de registros a devolver.',
+            schema: {
+              type: 'string',
+            },
+          },
+        ],
+        responses: {
+          200: {
+            description: 'Vista Paginada',
+          },
+        },
+      },
+    },
     '/countries/': {
       get: {
         tags: ['Countries'],
@@ -1016,9 +1281,11 @@ const swaggerDocument = {
           },
           email: {
             type: 'string',
+            example: 'alexandermagnus@email.com',
           },
           password: {
             type: 'string',
+            example: '123456',
           },
         },
       },
@@ -1061,6 +1328,7 @@ const swaggerDocument = {
         properties: {
           email: {
             type: 'string',
+            example: 'example@email.com',
           },
         },
       },
