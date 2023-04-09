@@ -47,7 +47,9 @@ routerModels(app);
 routerErrorHandler(app);
 
 if (process.env.NODE_ENV != 'test') {
-  app.listen(PORT, () => console.log(`S erver running on http://localhost:${PORT}`) )
+  app.listen(PORT, () =>
+    console.log(`S erver running on http://localhost:${PORT}`)
+  );
 }
 
-module.exports = {app}
+module.exports = { app };

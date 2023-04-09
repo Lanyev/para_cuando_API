@@ -71,17 +71,22 @@ const putPublications = async (request, response, next) => {
 
 const deletePublications = async (request, response, next) => {
   try {
-    const { id:publicationId } = request.params;
-    const publication = await publicationsService.getPublications( publicationId )
-    const {user_id} = publication
-    console.log({user_id})
+    const { id: publicationId } = request.params;
+    const publication = await publicationsService.getPublications(
+      publicationId
+    );
+    const { user_id } = publication;
+    console.log({ user_id });
 
-    const admin = request.admin
-    const sameUser = request.isSameUser( user_id )
-    
-    if( !admin && !sameUser ) return response.status(401).json({ message: 'Unauthorized' })
+    const admin = request.admin;
+    const sameUser = request.isSameUser(user_id);
 
-    const publications = await publicationsService.deletePublications(publicationId);
+    if (!admin && !sameUser)
+      return response.status(401).json({ message: 'Unauthorized' });
+
+    const publications = await publicationsService.deletePublications(
+      publicationId
+    );
     response.status(404).json({ results: publications });
   } catch (error) {
     next(error);
@@ -94,5 +99,5 @@ module.exports = {
   getMyPublications,
   createPublications,
   putPublications,
-  deletePublications
+  deletePublications,
 };
