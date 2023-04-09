@@ -508,7 +508,6 @@ const swaggerDocument = {
         tags: ['Publications Types'],
         summary: 'Devuelve tipos de publicaciones',
         description: 'Retorna los tipos de publicaciones a elegir',
-        operationId: 'getPublicationsTypes',
         parameters: [
           {
             in: 'query',
