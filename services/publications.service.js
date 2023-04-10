@@ -1,7 +1,41 @@
 const models = require('../database/models');
-const { Op } = require('sequelize');
+const { Op, cast, literal } = require('sequelize');
 const { CustomError } = require('../utils/helpers');
 const { v4: uuidv4 } = require('uuid');
+
+const defaultIncludes = {
+  attributes:{
+    include: [
+      [cast(literal(
+      `(SELECT COUNT(*) FROM "votes" 
+        WHERE "votes"."publication_id" = "Publications"."id")`
+      ), 'integer'), 
+      'votes_count']
+    ],
+  },
+  include:[
+    {
+      model:models.Users,
+      as: 'user',
+    },
+    {
+      model:models.Users,
+      as: 'same_vote',
+    },
+    {
+      model:models.PublicationsImages,
+      as: 'images',
+    },
+    {
+      model:models.Tags,
+      as: 'tags',
+    },
+    {
+      model:models.PublicationTypes,
+      as: 'publication_type',
+    },
+  ]
+}
 
 class PublicationsTypesService {
   constructor() {}
@@ -9,6 +43,7 @@ class PublicationsTypesService {
   async findAndCount(query) {
     const options = {
       where: {},
+      ...defaultIncludes
     };
 
     const { limit, offset } = query;
@@ -68,10 +103,68 @@ class PublicationsTypesService {
   }
 
   //Return not an Instance raw:true | we also can converted to Json instead
-  async getPublications(id) {
-    let publication = await models.Publications.findByPk(id);
+  async getPublication(id) {
+    let publication = await models.Publications.findOne({
+      where:{id},
+      attributes:{
+        include: [
+          [cast(literal(
+          `(SELECT COUNT(*) FROM "votes" 
+            WHERE "votes"."publication_id" = "Publications"."id")`
+          ), 'integer'), 
+          'votes_count']
+        ],
+      },
+      include:[
+        {
+          model:models.Users,
+          as: 'same_vote',
+          // where:{
+          //   id:query.id
+          // }
+        },
+      ]
+    });
     if (!publication) throw new CustomError('Not found User', 404, 'Not Found');
     return publication;
+  }
+
+  async findAndCountByVote( query ) {
+    const options = {
+      where:{},
+      ...defaultIncludes
+    };
+
+    const { limit, offset } = query;
+    if (limit && offset) {
+      options.limit = limit;
+      options.offset = offset;
+    }
+    
+    //Necesario para el findAndCountAll de Sequelize
+    options.distinct = true;
+
+    const publications = await models.Publications.findAndCountAll(options);
+    return publications;
+  }
+
+  async findAndCountByUserId( query ) {
+    const options = {
+      where: {user_id:query.id},
+      ...defaultIncludes
+    };
+
+    const { limit, offset } = query;
+    if (limit && offset) {
+      options.limit = limit;
+      options.offset = offset;
+    }
+    
+    //Necesario para el findAndCountAll de Sequelize
+    options.distinct = true;
+
+    const publications = await models.Publications.findAndCountAll(options);
+    return publications;
   }
 
   async updatePublications(id, { 

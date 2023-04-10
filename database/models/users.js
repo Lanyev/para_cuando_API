@@ -5,8 +5,15 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class Users extends Model {
     static associate(models) {
+      //1
       Users.belongsTo(models.Countries, { as: 'country', foreignKey: 'country_id' })
+      //2
       Users.hasMany(models.Profiles, { as: 'profiles', foreignKey: 'user_id' })
+      //3
+      Users.hasMany( models.Publications, { as: 'user', foreignKey: 'user_id' } )
+      //4
+      Users.belongsToMany( models.Publications, { as: 'same_vote', through: 'votes', foreignKey: 'user_id', sourceKey: 'id' } )
+      //5
       Users.belongsToMany( models.Tags, { as: 'interests', through: 'users_tags', foreignKey: 'user_id'} )
     }
   }

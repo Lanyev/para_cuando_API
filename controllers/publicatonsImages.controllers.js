@@ -1,9 +1,10 @@
 const PublicationImagesService = require( '../services/publicatonsImages.service' )
+const {uploadFile, deleteFile} = require( '../libs/awsS3' )
 
 const publicationImagesService = new PublicationImagesService()
 
 const uploadImagePublication = async (request, response, next) => {
-  
+
     const publicationID = request.params.id;
     const files = request.files;
     try {
@@ -19,7 +20,10 @@ const uploadImagePublication = async (request, response, next) => {
         openSpots.map(async (spot, index) => {
           try {
             /* In case Open Spots > Images Posted */
+    
             if (!files[index]) return
+
+    
   
             let fileKey = `public/publications/images/image-${publicationID}-${spot}`;
     
@@ -34,17 +38,16 @@ const uploadImagePublication = async (request, response, next) => {
             if (files[index].mimetype == 'image/jpeg') {
               fileKey = `public/publications/images/image-${publicationID}-${spot}.jpeg`;
             }
-    
-            await uploadFile(files[index], fileKey);
-    
-            let bucketURL = process.env.AWS_DOMAIN + fileKey;
+
+            let algo = await uploadFile(files[index], fileKey);
+
+            let bucketURL = `${process.env.AWS_DOMAIN}${fileKey}`;
     
             let newImagePublication = await publicationImagesService.createImage(
               publicationID,
               bucketURL,
               spot
             );
-  
             imagesKeys.push(bucketURL)
   
           } catch (error) {
@@ -63,6 +66,7 @@ const uploadImagePublication = async (request, response, next) => {
           }
         })
       );
+
   
       return response
         .status(200)
@@ -84,22 +88,23 @@ const uploadImagePublication = async (request, response, next) => {
     }
   };
   
-  const removePublicationImage = async (request, response, next) => {
-    const publicationID = request.params.id
-    const order = request.params.order
-    try {
-  
-      let {image_url} = await publicationImagesService.getImageOr404(publicationID, order)
-      let awsDomain = process.env.AWS_DOMAIN
-      const imageKey = image_url.replace(awsDomain, '')
-      await deleteFile(imageKey)
-      let publicationImage = await publicationImagesService.removeImage(publicationID, order)
-  
-      return response.status(200).json({ message: 'Removed', image: publicationImage })
-    } catch (error) {
-      next(error)
-    }
+const removePublicationImage = async (request, response, next) => {
+  const publicationID = request.params.id
+  const {order} = request.params
+  console.log({order})
+  try {
+
+    let {image_url} = await publicationImagesService.getImageOr404(publicationID, order)
+    let awsDomain = process.env.AWS_DOMAIN
+    const imageKey = image_url.replace(awsDomain, '')
+    await deleteFile(imageKey)
+    let publicationImage = await publicationImagesService.removeImage(publicationID, order)
+
+    return response.status(200).json({ message: 'Removed', image: publicationImage })
+  } catch (error) {
+    next(error)
   }
+}
 
 module.exports = {
   uploadImagePublication,

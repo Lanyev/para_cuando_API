@@ -19,10 +19,10 @@ const getPublications = async (request, response, next) => {
   }
 };
 
-const getPublicationsById = async (request, response, next) => {
+const getPublicationById = async (request, response, next) => {
   try {
     let { id } = request.params;
-    let publications = await publicationsService.getPublications(id);
+    let publications = await publicationsService.getPublication(id);
     return response.json({ results: publications });
   } catch (error) {
     next(error);
@@ -31,7 +31,7 @@ const getPublicationsById = async (request, response, next) => {
 
 const getMyPublications = async (request, response, next) => {
   try {
-    let { id } = request.publications.id;
+    let { id } = request.params;
     let publications = await publicationsService.getPublications(id);
     return response.json({ results: publications });
   } catch (error) {
@@ -52,6 +52,40 @@ const createPublications = async (request, response, next) => {
     next(error);
   }
 };
+
+const getPublicationsByVote = async (request, response, next) => {
+  try {
+    const query = request.query;
+    query.user_id = request.params.id
+    const { page, size } = query;
+    const { limit, offset } = getPagination(page, size, '10');
+    query.limit = limit;
+    query.offset = offset;
+
+    let publications = await publicationsService.findAndCountByVote(query);
+    const results = getPagingData(publications, page, limit);
+    return response.json({ results });
+  } catch (error) {
+    next(error);
+  }
+}
+
+const getPublicationsByUserId = async (request, response, next) => {
+  try {
+    let query = request.query;
+    query.id = request.params.id
+    let { page, size } = query;
+    const { limit, offset } = getPagination(page, size, '10');
+    query.limit = limit;
+    query.offset = offset;
+
+    let publications = await publicationsService.findAndCountByUserId(query);
+    const results = getPagingData(publications, page, limit);
+    return response.json({ results });
+  } catch (error) {
+    next(error);
+  }
+}
 
 const putPublications = async (request, response, next) => {
   try {
@@ -90,9 +124,11 @@ const deletePublications = async (request, response, next) => {
 
 module.exports = {
   getPublications,
-  getPublicationsById,
+  getPublicationById,
   getMyPublications,
   createPublications,
+  getPublicationsByUserId,
+  getPublicationsByVote,
   putPublications,
   deletePublications
 };
