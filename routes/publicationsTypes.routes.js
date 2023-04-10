@@ -9,8 +9,6 @@ const {
 
 router.get('/', getPublicationsTypes);
 
-router.route('/:id')
-    .get(getPublicationsTypesById)
-    .put(putPublicationsTypes);
+router.route('/:id').get(getPublicationsTypesById).put(putPublicationsTypes);
 
 module.exports = router;
