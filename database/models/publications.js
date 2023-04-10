@@ -3,18 +3,19 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Publications extends Model {
     static associate(models) {
-      Publications.belongsTo(models.Users, {
-        as: 'user',
-        foreignKey: 'user_id',
-      });
-      Publications.belongsTo(models.PublicationTypes, {
-        as: 'publication_type',
-        foreignKey: 'publication_type_id',
-      });
-      Publications.belongsTo(models.Cities, {
-        as: 'city',
-        foreignKey: 'city_id',
-      });
+      //1
+      Publications.belongsTo(models.Users, { as: 'user', foreignKey: 'user_id' });
+      //2
+      Publications.belongsTo(models.PublicationTypes, { as: 'publication_type', foreignKey: 'publication_type_id' });
+      //3
+      Publications.belongsTo(models.Cities, { as: 'city', foreignKey: 'city_id' });
+      //4
+      Publications.hasMany( models.PublicationsImages, { as: 'images', foreignKey: 'publication_id'} )
+      //5
+      Publications.belongsToMany( models.Users, { as: 'same_vote', through: 'votes', foreignKey: 'publication_id' } )
+      //6
+      Publications.belongsToMany( models.Tags, { as: 'tags', through: 'publications_tags', foreignKey:'publication_id' } )
+      
     }
   }
   Publications.init(

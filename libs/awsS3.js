@@ -1,7 +1,6 @@
-const { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3')
-const { getSignedUrl } = require('@aws-sdk/s3-request-presigner')
+const fs = require('fs')
 
-const S3 = require('aws-sdk/clients/s3')// TEMPORAL
+const { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3')
 
 require('dotenv').config()
 
@@ -18,25 +17,21 @@ const s3Client = new S3Client({
   }
 })
 
-const s3 = new S3({ //TEMPORAL
-  region,
-  accessKeyId,
-  secretAccessKey
-})
+//Returns a Promise
+const uploadFile = (fileMulterObject, fileName) => {
+  const fileStream = fs.createReadStream(fileMulterObject.path)
 
-
-const uploadFile = (fileBuffer, fileName, mimetype) => {
-  // const fileStream = fs.createReadStream(fileBuffer.path)
   const uploadParams = {
     Bucket: bucketName,
-    Body: fileBuffer,
+    Body: fileStream,
     Key: fileName,
-    ContentType: mimetype
+    ContentType: fileMulterObject.mimetype,
   }
 
   return s3Client.send(new PutObjectCommand(uploadParams))
 }
 
+//Returns a Promise
 const deleteFile = (fileName) => {
   const deleteParams = {
     Bucket: bucketName,
@@ -46,40 +41,8 @@ const deleteFile = (fileName) => {
   return s3Client.send(new DeleteObjectCommand(deleteParams))
 }
 
-const getObjectSignedUrl = async (key) => {
-  try {
-    const params = {
-      Bucket: bucketName,
-      Key: key
-    } 
-    // https://aws.amazon.com/blogs/developer/generate-presigned-url-modular-aws-sdk-javascript/
-    const command = new GetObjectCommand(params)
-    const seconds = 600 
-    const url = await getSignedUrl(s3Client, command, { expiresIn: seconds })
-    // const url = await getSignedUrl(s3Client, command); // SIN EXPIRACION
-    return url
-  } catch (error) {
-    throw new Error(error)
-  }
-}
-
-const getFileStream = async (fileKey) => {
-  try {
-    const downloadParams = {
-      Key: fileKey,
-      Bucket: bucketName,
-    }
-
-    return s3.getObject(downloadParams).createReadStream()
-  } catch (error) {
-    throw new Error(error)
-  }
-}
-
 
 module.exports = {
   uploadFile,
-  getObjectSignedUrl,
   deleteFile,
-  getFileStream
 }

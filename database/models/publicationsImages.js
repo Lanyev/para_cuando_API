@@ -5,8 +5,7 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class PublicationsImages extends Model {
     static associate(models) {
-      // Cities.belongsTo( models.States, { as: 'states', foreignKey: 'state_id'} )
-      // Cities.hasMany( models.Publications, { as: 'publications', foreignKey: 'city_id'} )
+      PublicationsImages.belongsTo( models.Publications, { as: 'images', foreignKey: 'publication_id'} )
     }
   }
   PublicationsImages.init({

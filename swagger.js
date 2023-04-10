@@ -1078,45 +1078,52 @@ const swaggerDocument = {
         ],
       },
     },
-    '/tags/{tagID}/publications/': {
-      get: {
+    '/tags/{tagID}/add-image/': {
+      post: {
         tags: ['Tags'],
-        summary: 'Devuelve las publicaciones asociadas al tag',
-        description: 'Retorna las publicaciones asociadas al tag',
-        operationId: 'getPublicationsByTagId',
+        summary: 'Añade imagenes a los tags',
+        description: 'Añade una imágen a el tag especificado',
+        operationId: 'addImageTagById',
         parameters: [
           {
             name: 'tagID',
             in: 'path',
-            description: 'ID del tipo de tag',
+            description: 'ID de el Tag',
             required: true,
             schema: {
               type: 'string',
               format: 'integer',
             },
           },
-          {
-            in: 'query',
-            name: 'page',
-            description: 'En que vista de la paginación habrá que mostrar.',
-            schema: {
-              type: 'string',
-            },
-          },
-          {
-            in: 'query',
-            name: 'size',
-            description: 'El número de registros a devolver.',
-            schema: {
-              type: 'string',
-            },
-          },
         ],
-        responses: {
-          200: {
-            description: 'Vista Paginada',
+        requestBody: {
+          content: {
+            'multipart/form-data': {
+              schema: {
+                type: 'object',
+                properties: {
+                  image: {
+                    type: 'array',
+                    items: {
+                      type: 'string',
+                      format: 'binary',
+                    },
+                  },
+                },
+              },
+            },
           },
         },
+        responses: {
+          201: {
+            description: 'successful operation',
+          },
+        },
+        security: [
+          {
+            tokenJWT: [],
+          },
+        ],
       },
     },
     '/countries/': {
