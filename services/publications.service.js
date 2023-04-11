@@ -3,45 +3,54 @@ const { Op, cast, literal } = require('sequelize');
 const { CustomError } = require('../utils/helpers');
 const { v4: uuidv4 } = require('uuid');
 
+const defaultFilter =  {
+  include: [
+    {
+      model: models.Users.scope( 'user' ),
+      as: 'user',
+    },
+    {
+      model: models.PublicationTypes,
+      as: 'publication_type',
+    },
+    {
+      model: models.PublicationsImages,
+      as: 'images',
+    },
+    {
+      model: models.Tags,
+      as: 'tags',
+      through: { attributes: [] },
+    },
+    {
+      model: models.Users.scope( 'same_vote' ),
+      as: 'same_vote',
+      through: { attributes: [] },
+    },
+  ],
+  attributes: {
+    include: [
+      [
+        cast(
+          literal(
+            `(SELECT COUNT(*) FROM "votes" 
+        WHERE "votes"."publication_id" = "Publications"."id")`
+          ),
+          'integer'
+        ),
+        'votes_count',
+      ],
+    ],
+  },
+}
+
 class PublicationsService {
   constructor() {}
 
   async findAndCount(query) {
     const options = {
       where: {},
-      include: [
-        {
-          model: models.Users.scope('view_public'),
-          as: 'user',
-        },
-        {
-          model: models.PublicationTypes,
-          as: 'publication_type',
-        },
-        {
-          model: models.PublicationsImages,
-          as: 'images',
-        },
-        {
-          model: models.Tags,
-          as: 'tags',
-          through: { attributes: [] },
-        },
-      ],
-      attributes: {
-        include: [
-          [
-            cast(
-              literal(
-                `(SELECT COUNT(*) FROM "votes" 
-						WHERE "votes"."publication_id" = "Publications"."id")`
-              ),
-              'integer'
-            ),
-            'votes_count',
-          ],
-        ],
-      },
+      ...defaultFilter
     };
 
     const { limit, offset } = query;
@@ -50,15 +59,11 @@ class PublicationsService {
       options.offset = offset;
     }
 
-    const { tag_id } = query;
-    if (tag_id) {
-      const publication_id = await models.PublicationsTags.findAll({
-        where: { tag_id },
-        attributes: { exclude: ['id'] },
-      });
-      const ids = publication_id.map((pub) => pub.publication_id);
-      options.where.id = { [Op.in]: ids };
-    }
+    // const { tags } = query;
+    // if (tags) {
+    //   const ids = publication_id.map((pub) => pub.publication_id);
+    //   options.where.id = { [Op.in]: ids };
+    // }
 
     const { publication_type_id } = query;
     if (publication_type_id) {
@@ -95,22 +100,37 @@ class PublicationsService {
     reference_link,
     user_id,
     publication_type_id,
+    tags
   }) {
     const transaction = await models.sequelize.transaction();
     try {
       let newPublication = await models.Publications.create(
         {
           id: uuidv4(),
+          user_id,
+          publication_type_id,
           title,
           description,
           content,
           city_id,
           reference_link,
-          user_id,
-          publication_type_id,
         },
         { transaction }
       );
+
+      if (tags){
+        let arrayTags = tags.split(',')
+        let findedTags = await models.Tags.findAll({
+          where: { id: arrayTags },
+          attributes: ['id'],
+          raw: true,
+        })
+
+        if (findedTags.length > 0) {
+          let tags_ids = findedTags.map(tag => tag['id'])
+          await newPublication.setTags(tags_ids, { transaction })
+        }
+      }
 
       await transaction.commit();
       return newPublication;
@@ -120,18 +140,48 @@ class PublicationsService {
     }
   }
 
+  async createVote( {publication_id, user_id} ){
+    const transaction = await models.sequelize.transaction();
+    try {
+      const publication = await models.Publications.findOne({
+        where:{
+          id:publication_id
+        }
+      })
+
+      console.log(publication)
+
+      if (!user_id) return
+
+      await publication.setSame_vote(user_id, { transaction })
+
+      await transaction.commit();
+      return publication;
+    } catch (error) {
+      await transaction.rollback();
+      throw error;
+    }
+  }
+
   //Return not an Instance raw:true | we also can converted to Json instead
-  async getPublications(id) {
+  async getPublication(id) {
     const result = await models.Publications.findByPk(id, {
+      ...defaultFilter
+    });
+    if (!result) {
+      throw new CustomError('Publication not found', 404);
+    }
+    return result;
+  }
+
+  async findAndCountByVote( query ) {
+    const {user_id} = query
+    const options = {
+      where:{user_id},
       include: [
         {
-          model: models.Users.scope('view_public'),
+          model: models.Users.scope( 'user' ),
           as: 'user',
-        },
-        {
-          model: models.Tags,
-          as: 'tags',
-          through: { attributes: [] },
         },
         {
           model: models.PublicationTypes,
@@ -141,6 +191,16 @@ class PublicationsService {
           model: models.PublicationsImages,
           as: 'images',
         },
+        {
+          model: models.Tags,
+          as: 'tags',
+          through: { attributes: [] },
+        },
+        {
+          model: models.Users.scope( 'same_vote' ),
+          as: 'same_vote',
+          through: { attributes: [] },
+        },
       ],
       attributes: {
         include: [
@@ -148,19 +208,46 @@ class PublicationsService {
             cast(
               literal(
                 `(SELECT COUNT(*) FROM "votes" 
-                WHERE "votes"."publication_id" = "Publications"."id")`
+            WHERE "votes"."publication_id" = "Publications"."id")`
               ),
               'integer'
             ),
             'votes_count',
           ],
         ],
-      },
-    });
-    if (!result) {
-      throw new CustomError('Publication not found', 404);
+      }
+    };
+
+    const { limit, offset } = query;
+    if (limit && offset) {
+      options.limit = limit;
+      options.offset = offset;
     }
-    return result;
+
+    //Necesario para el findAndCountAll de Sequelize
+    options.distinct = true;
+
+    const publications = await models.Publications.findAndCountAll(options);
+    return publications;
+  }
+
+  async findAndCountByUserId( query ) {
+    const options = {
+      where: {user_id:query.id},
+      ...defaultFilter
+    };
+
+    const { limit, offset } = query;
+    if (limit && offset) {
+      options.limit = limit;
+      options.offset = offset;
+    }
+
+    //Necesario para el findAndCountAll de Sequelize
+    options.distinct = true;
+
+    const publications = await models.Publications.findAndCountAll(options);
+    return publications;
   }
 
   async updatePublications(
@@ -202,13 +289,15 @@ class PublicationsService {
   async deletePublications(id) {
     const transaction = await models.sequelize.transaction();
     try {
-      let publications = await models.Publications.findByPk(id);
+      let publications = await models.Publications.findOne({
+        where:{id}
+      });
       if (!publications) {
         throw new CustomError('Publication not found', 404);
       }
-      await publications.destroy({ transaction });
+      const result = await publications.destroy({ transaction });
       await transaction.commit();
-      return publications;
+      return result;
     } catch (error) {
       await transaction.rollback();
       throw error;

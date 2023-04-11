@@ -18,11 +18,6 @@ class UsersService {
       options.offset = offset;
     }
 
-    const { id } = query;
-    if (id) {
-      options.where.id = id;
-    }
-
     const { first_name } = query;
     if (first_name) {
       options.where.first_name = { [Op.iLike]: `%${first_name}%` };
@@ -43,10 +38,30 @@ class UsersService {
       options.where.username = { [Op.iLike]: `%${username}%` };
     }
 
+    const { email_verified } = query;
+    if (email_verified) {
+      options.where.email_verified = { [Op.iLike]: `${email_verified}` };
+    }
+
+    const { country_id } = query;
+    if (country_id) {
+      options.where.country_id = { [Op.iLike]: `${country_id}` };
+    }
+
+    const { code_phone } = query;
+    if (code_phone) {
+      options.where.code_phone = { [Op.iLike]: `%${code_phone}%` };
+    }
+
+    const { phone } = query;
+    if (phone) {
+      options.where.phone = { [Op.iLike]: `%${phone}%` };
+    }
+
     //Necesario para el findAndCountAll de Sequelize
     options.distinct = true;
 
-    const users = await models.Users.scope('view_same_user').findAndCountAll(
+    const users = await models.Users.scope('admin').findAndCountAll(
       options
     );
     return users;
@@ -95,37 +110,14 @@ class UsersService {
     return user;
   }
 
-  async getUser(id, sameOrAdmin) {
-    let user;
-    if (sameOrAdmin) {
-      user = await models.Users.findByPk(id, {
-        attributes: [
-          'id',
-          'first_name',
-          'last_name',
-          'email',
-          'username',
-          'email_verified',
-          'code_phone',
-          'phone',
-          'image_url',
-        ],
-        include: {
-          model: models.Tags.scope('view_public'),
+  async getUser(id, scope) {
+      const user = await models.Users.scope(scope).findByPk(id, {
+        include:[{
+          model:models.Tags,
           as: 'interests',
-          attributes: { exclude: ['UsersTags'] },
-        },
+          through: { attributes: [] }
+        }]
       });
-    } else {
-      user = await models.Users.findByPk(id, {
-        attributes: ['id', 'first_name', 'last_name', 'image_url'],
-        include: {
-          model: models.Tags.scope('view_public'),
-          as: 'interests',
-          attributes: { exclude: ['UsersTags'] },
-        },
-      });
-    }
     if (!user) throw new CustomError('Not found User', 404, 'Not Found');
     return user;
   }
@@ -138,13 +130,49 @@ class UsersService {
   }
 
   async updateUser(id, obj) {
+    const {
+      first_name, 
+      last_name, 
+      code_phone, 
+      phone, 
+      interests:tags
+    } = obj
     const transaction = await models.sequelize.transaction();
     try {
-      let user = await models.Users.findByPk(id);
+      let user = await models.Users.findOne({ where:{ id } });
       if (!user) throw new CustomError('Not found user', 404, 'Not Found');
-      let updatedUser = await user.update(obj, { transaction });
+      let updatedUser = await user.update({
+        first_name,
+        last_name,
+        code_phone,
+        phone
+      }, { transaction });     
+
+      if (tags){
+        let arrayTags = tags.split(',')
+        let findedTags = await models.Tags.findAll({
+          where: { id: arrayTags },
+          attributes: ['id'],
+          raw: true,
+        })
+  
+        if (findedTags.length > 0) {
+          let tags_ids = findedTags.map(tag => tag['id'])
+          await user.setInterests(tags_ids, { transaction })
+        }
+      }
+
+      user = await models.Users.findOne({ 
+        where:{ id } ,
+        include:[{
+          model:models.Tags,
+          as: 'interests',
+          through: { attributes: [] }
+        }]
+      });
+
       await transaction.commit();
-      return updatedUser;
+      return user;
     } catch (error) {
       await transaction.rollback();
       throw error;
@@ -243,6 +271,39 @@ class UsersService {
       await transaction.rollback();
       throw error;
     }
+  }
+  
+  async createUserImage(id, image_url) {
+    const transaction = await models.sequelize.transaction()
+    try {  
+      let user = await models.Users.findByPk(id);
+      if (!user) throw new CustomError('Not found user', 404, 'Not Found');
+      let newImage = await user.update({ 
+        image_url }, 
+      { transaction })
+      await transaction.commit();
+      return newImage
+    } catch (error) {
+      await transaction.rollback();
+      throw error;
+    }
+  }
+
+  async removeUserImage(id) {{
+    const transaction = await models.sequelize.transaction()
+    try {  
+      let user = await models.Users.findByPk(id);
+      if (!user) throw new CustomError('Not found user', 404, 'Not Found');
+      let newImage = await user.update({ 
+        image_url:null }, 
+      { transaction })
+      await transaction.commit();
+      return newImage
+    } catch (error) {
+      await transaction.rollback();
+      throw error;
+    }
+  }
   }
 }
 
