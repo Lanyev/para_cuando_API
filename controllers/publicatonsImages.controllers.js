@@ -1,5 +1,6 @@
 const PublicationImagesService = require( '../services/publicatonsImages.service' )
 const {uploadFile, deleteFile} = require( '../libs/awsS3' )
+const {unlink:unlinkFile} = require( 'fs' )
 
 const publicationImagesService = new PublicationImagesService()
 

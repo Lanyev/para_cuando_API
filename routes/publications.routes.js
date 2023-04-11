@@ -11,6 +11,7 @@ const {
   getPublicationById,
   putPublications,
   createPublications,
+  createVote,
   deletePublications,
 } = require('../controllers/publications.controller');
 
@@ -26,12 +27,13 @@ router.use( passportAuth, isAdmin, isSameUser )
 
 router.post( '/', createPublications);
 
-router.route('/:id')
-  .put( putPublications )
-  .delete( deletePublications );
+router.delete( '/:id', deletePublications );
 
 router.post( '/:id/add-image', multerPublicationsPhotos.array('images', 3), uploadImagePublication )
+
 router.delete( '/:id/remove-image/:order', removePublicationImage ) 
+
+router.post( '/:id/vote', createVote);
 
 
 module.exports = router;

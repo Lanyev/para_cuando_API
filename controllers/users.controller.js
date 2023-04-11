@@ -1,7 +1,9 @@
 const UsersService = require('../services/users.service')
 const { getPagination, getPagingData } = require('../utils/helpers')
+const { uploadFile, deleteFile } = require( '../libs/awsS3' )
+const {unlinkSync:unlinkFile} = require( 'fs' )
 
-const UserService = new UsersService()
+const usersService = new UsersService()
 
 const getUsers = async (request, response, next) => {
   try {
@@ -15,7 +17,7 @@ const getUsers = async (request, response, next) => {
     query.limit = limit
     query.offset = offset
 
-    let users = await UserService.findAndCount(query)
+    let users = await usersService.findAndCount(query)
     const results = getPagingData(users, page, limit)
     return response.json({ results: results })
   } catch (error) {
@@ -33,7 +35,7 @@ const getUserById = async (request, response, next) => {
     if (sameUser || admin ) 
       scope = 'admin'
 
-    let user = await UserService.getUser(id, scope)
+    let user = await usersService.getUser(id, scope)
     return response.json({ results: user })
    
   } catch (error) {
@@ -44,7 +46,7 @@ const getUserById = async (request, response, next) => {
 const getMyUser = async (request, response, next) => {
   try {
     let { id } = request.user.id
-    let user = await UserService.getUser(id)
+    let user = await usersService.getUser(id)
     return response.json({ results: user })
   } catch (error) {
     next(error)
@@ -56,14 +58,75 @@ const patchUser = async (request, response, next) => {
     let { id } = request.user
     
     if (id !== request.params.id) 
-      return response.status(403).json({ message: 'Unauthorized' })
+      return response.status(403).json({ message: 'Forbidden' })
       
     let { body } = request
-    let user = await UserService.updateUser(id, body)
-    return response.json({ results: user })
+    let user = await usersService.updateUser(id, body)
+    return response.json({ message: "success update" })
   } catch (error) {
     next(error)
   }
+}
+
+const uploadImageUser = async (request, response, next) => {
+
+  const {id} = request.params;
+  const file = request.file;
+  console.log(file)
+  try {
+    if (!file) throw new CustomError('No image received', 400, 'Bad Request');
+
+    let user = await usersService.getUser(id)
+
+    if(!user) return
+
+    let fileKey = `public/users/images/image-${id}`;
+
+    if (file.mimetype == 'image/png') {
+      fileKey = `public/users/images/image-${id}.png`;
+    }
+
+    if (file.mimetype == 'image/jpg') {
+      fileKey = `public/users/images/image-${id}.jpg`;
+    }
+
+    if (file.mimetype == 'image/jpeg') {
+      fileKey = `public/users/images/image-${id}.jpeg`;
+    }
+
+    await uploadFile(file, fileKey);
+    let bucketURL = `${process.env.AWS_DOMAIN}${fileKey}`;
+    let newImagePublication = await usersService.createUserImage(
+      id,
+      bucketURL
+    );
+
+    // await unlinkFile(file.path);
+
+    return response
+      .status(200)
+      .json({ results: bucketURL });
+
+  } catch (error) {
+    // await unlinkFile(file.path);
+    return next(error);
+  }
+};
+
+const removeUserImage = async (request, response, next) => {
+const {id} = request.params
+try {
+
+  let {image_url} = await usersService.getUser(id)
+  let awsDomain = process.env.AWS_DOMAIN
+  const imageKey = image_url.replace(awsDomain, '')
+  await deleteFile(imageKey)
+  let publicationImage = await usersService.removeUserImage(id)
+
+  return response.status(200).json({ message: 'Removed', image: publicationImage })
+} catch (error) {
+  next(error)
+}
 }
 
 module.exports = {
@@ -71,4 +134,6 @@ module.exports = {
   getUserById,
   getMyUser,
   patchUser,
+  uploadImageUser,
+  removeUserImage
 }

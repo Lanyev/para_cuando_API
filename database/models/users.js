@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       //3
       Users.hasMany( models.Publications, { as: 'user', foreignKey: 'user_id' } )
       //4
-      Users.belongsToMany( models.Publications, { as: 'same_vote', through: 'votes', foreignKey: 'user_id', sourceKey: 'id' } )
+      Users.belongsToMany( models.Publications, { as: 'same_vote', through: 'votes', foreignKey: 'user_id'} )
       //5
       Users.belongsToMany( models.Tags, { as: 'interests', through: 'users_tags', foreignKey: 'user_id'} )
     }
@@ -63,7 +63,9 @@ module.exports = (sequelize, DataTypes) => {
     phone: {
       type: DataTypes.STRING
     },
-    country_id: DataTypes.INTEGER,
+    country_id: {
+      type:DataTypes.INTEGER
+    },
     image_url: {
       type: DataTypes.STRING 
     },
@@ -77,6 +79,8 @@ module.exports = (sequelize, DataTypes) => {
       // view_public: {attributes: ['id', 'first_name', 'last_name', 'country_id', 'image_url']},
       // auth_flow: {attributes: ['id', 'first_name', 'last_name', 'email', 'username',]},
       public: { attributes: [ 'id', 'first_name', 'last_name', 'image_url'] },
+      user: { attributes: ['first_name', 'last_name', 'image_url'] },
+      same_vote: { attributes: ['id', 'first_name', 'last_name'] },
       view_me: {attributes: ['id', 'first_name', 'last_name', 'email', 'username','image_url']},
       view_same_user: {attributes: ['id', 'first_name', 'last_name', 'country_id', 'image_url','email', 'username', 'code_phone', 'phone']},
       admin: { attributes: { exclude: [ 'password', 'token' ] } }
