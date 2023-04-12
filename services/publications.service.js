@@ -79,6 +79,26 @@ class PublicationsService {
 
       options.where.id = { [Op.in]: publicationsIds  };
     }
+    
+    const { votes_count } = query;
+    let arrQuery = []
+    if( votes_count )
+      arrQuery = votes_count.split( ',' )
+    if (arrQuery.length > 0 && arrQuery.length < 2) {
+      const filterOp = arrQuery[0]
+      const votes = arrQuery[1]
+      const filters = [
+        'gte',
+        'lte',
+        'lt',
+        'gt',
+        'eq',
+      ]
+      if( filters.some( filter => filter == votes ) ) 
+        throw new CustomError(`Operator ${filterOp} is not valid`, 400, 'Bad Request');
+        
+      options.where.phone = { [Op[filterOp]]: `%${votes}%` }
+    };
 
     const { publication_type_id } = query;
     if (publication_type_id) {
