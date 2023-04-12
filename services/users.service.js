@@ -40,12 +40,12 @@ class UsersService {
 
     const { email_verified } = query;
     if (email_verified) {
-      options.where.email_verified = { [Op.iLike]: `${email_verified}` };
+      options.where.email_verified = { [Op.iLike]: `%${email_verified}%` };
     }
 
     const { country_id } = query;
     if (country_id) {
-      options.where.country_id = { [Op.iLike]: `${country_id}` };
+      options.where.country_id = { [Op.iLike]: `%${country_id}%` };
     }
 
     const { code_phone } = query;
@@ -56,6 +56,11 @@ class UsersService {
     const { phone } = query;
     if (phone) {
       options.where.phone = { [Op.iLike]: `%${phone}%` };
+    }
+    
+    const { created_at } = query;
+    if (created_at) {
+      options.where.created_at = { [Op.iLike]: `%${created_at}%` };
     }
 
     //Necesario para el findAndCountAll de Sequelize
