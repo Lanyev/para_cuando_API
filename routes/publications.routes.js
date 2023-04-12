@@ -21,6 +21,7 @@ const {
 } = require( '../controllers/publicatonsImages.controllers' )
 
 router.get('/', getPublications)
+
 router.get( '/:id', getPublicationById)
 
 router.use( passportAuth, isAdmin, isSameUser )

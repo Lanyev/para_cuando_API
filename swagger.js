@@ -393,6 +393,11 @@ const swaggerDocument = {
             description: 'successful operation',
           },
         },
+        security: [
+          {
+            tokenJWT: [],
+          },
+        ],
       },
     },
     '/users/{userID}/remove-image': {
@@ -417,6 +422,11 @@ const swaggerDocument = {
             description: 'successful operation',
           },
         },
+        security: [
+          {
+            tokenJWT: [],
+          },
+        ],
       },
     },
     '/users/{userID}/votes': {
@@ -1116,6 +1126,35 @@ const swaggerDocument = {
         },
         responses: {
           201: {
+            description: 'successful operation',
+          },
+        },
+        security: [
+          {
+            tokenJWT: [],
+          },
+        ],
+      },
+    },
+    '/tags/{tagID}/remove-image': {
+      delete: {
+        tags: ['Tags'],
+        summary: 'Elimina una imagen de un tag',
+        description: 'Elimina una imagen de un tag y de la base de datos',
+        parameters: [
+          {
+            name: 'tagID',
+            in: 'path',
+            description: 'ID del tag a retornar',
+            required: true,
+            schema: {
+              type: 'string',
+              format: 'integer',
+            },
+          },
+        ],
+        responses: {
+          200: {
             description: 'successful operation',
           },
         },
