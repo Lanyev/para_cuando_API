@@ -102,6 +102,39 @@ class TagsService {
     }
   }
 
+  async createUserImage(id, image_url) {
+    const transaction = await models.sequelize.transaction()
+    try {  
+      let tag = await models.Tags.findByPk(id);
+      if (!tag) throw new CustomError('Not found tag', 404, 'Not Found');
+      let newImage = await tag.update({ 
+        image_url }, 
+      { transaction })
+      await transaction.commit();
+      return newImage
+    } catch (error) {
+      await transaction.rollback();
+      throw error;
+    }
+  }
+
+  async removeUserImage(id) {{
+    const transaction = await models.sequelize.transaction()
+    try {  
+      let tag = await models.Tags.findByPk(id);
+      if (!tag) throw new CustomError('Not found tag', 404, 'Not Found');
+      let newImage = await tag.update({ 
+        image_url:null }, 
+      { transaction })
+      await transaction.commit();
+      return newImage
+    } catch (error) {
+      await transaction.rollback();
+      throw error;
+    }
+  }
+  }
+
 }
 
 module.exports = TagsService

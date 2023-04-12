@@ -59,11 +59,26 @@ class PublicationsService {
       options.offset = offset;
     }
 
-    // const { tags } = query;
-    // if (tags) {
-    //   const ids = publication_id.map((pub) => pub.publication_id);
-    //   options.where.id = { [Op.in]: ids };
-    // }
+    const { tags:tagsToSplit } = query;
+    if (tagsToSplit) {
+      const tagsSplit = tagsToSplit.split(',')
+      let publicationsIds = []
+      for (const tagId of tagsSplit) {
+        const Tag = await models.Tags.findOne({
+            where:{id:tagId},
+            attributes:['id']
+          },
+          {
+            raw:true
+        })
+        
+        const publicationsByTag = await Tag.getTags(  )
+        const ids = publicationsByTag.map( pub => pub.id )
+        publicationsIds = [...publicationsIds, ...ids]
+      }
+
+      options.where.id = { [Op.in]: publicationsIds  };
+    }
 
     const { publication_type_id } = query;
     if (publication_type_id) {
@@ -132,6 +147,9 @@ class PublicationsService {
         }
       }
 
+      let user = await newPublication.getSame_vote({where:{id:user_id}})
+      await newPublication.addSame_vote(user_id, { transaction })
+
       await transaction.commit();
       return newPublication;
     } catch (error) {
@@ -149,14 +167,17 @@ class PublicationsService {
         }
       })
 
-      console.log(publication)
-
-      if (!user_id) return
-
-      await publication.setSame_vote(user_id, { transaction })
-
+      // console.log(publication)
+      let user = await publication.getSame_vote({where:{id:user_id}})
+      let vote
+      if (user[0]){
+        vote = await publication.removeSame_vote(user_id, { transaction })
+      } else{
+        vote = await publication.addSame_vote(user_id, { transaction })
+      }
+      console.log({vote})
       await transaction.commit();
-      return publication;
+      return vote;
     } catch (error) {
       await transaction.rollback();
       throw error;
@@ -176,46 +197,13 @@ class PublicationsService {
 
   async findAndCountByVote( query ) {
     const {user_id} = query
+    const filter = defaultFilter
+    const {include} = filter
+    include.pop()
+    filter.include = include
     const options = {
-      where:{user_id},
-      include: [
-        {
-          model: models.Users.scope( 'user' ),
-          as: 'user',
-        },
-        {
-          model: models.PublicationTypes,
-          as: 'publication_type',
-        },
-        {
-          model: models.PublicationsImages,
-          as: 'images',
-        },
-        {
-          model: models.Tags,
-          as: 'tags',
-          through: { attributes: [] },
-        },
-        {
-          model: models.Users.scope( 'same_vote' ),
-          as: 'same_vote',
-          through: { attributes: [] },
-        },
-      ],
-      attributes: {
-        include: [
-          [
-            cast(
-              literal(
-                `(SELECT COUNT(*) FROM "votes" 
-            WHERE "votes"."publication_id" = "Publications"."id")`
-              ),
-              'integer'
-            ),
-            'votes_count',
-          ],
-        ],
-      }
+      where:{},
+      ...filter
     };
 
     const { limit, offset } = query;
@@ -223,6 +211,12 @@ class PublicationsService {
       options.limit = limit;
       options.offset = offset;
     }
+
+    const user = await models.Users.findOne({where:{id:user_id}})
+
+    const publicationsByUser = await user.getSame_vote(options);
+    const PublicationsIds = publicationsByUser.map( publication => publication.id )
+    options.where.id = PublicationsIds
 
     //Necesario para el findAndCountAll de Sequelize
     options.distinct = true;

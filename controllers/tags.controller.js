@@ -1,5 +1,6 @@
 const TagsService = require('../services/tags.services')
 const { getPagination, getPagingData } = require('../utils/helpers')
+const { uploadFile, deleteFile } = require( '../libs/awsS3' )
 
 const tagsService = new TagsService();
 
@@ -48,8 +49,7 @@ const putTag = async (request, response, next) => {
   try {
     const admin = request.admin
     
-    if ( !admin ) 
-      return response.status(403).json({ message: 'Unauthorized' })
+    if ( !admin ) return response.status(403).json({ message: 'Forbidden' })
 
     let { id } = request.params;
     let { body } = request;
@@ -64,8 +64,7 @@ const deleteTag = async (request, response, next) => {
   try {
     const admin = request.admin
 
-    if ( !admin ) 
-      return response.status(403).json({ message: 'Unauthorized' })
+    if ( !admin ) return response.status(403).json({ message: 'Forbidden' })
 
     let { id } = request.params;
     let tag = await tagsService.removeTag( id );
@@ -75,10 +74,79 @@ const deleteTag = async (request, response, next) => {
   }
 };
 
+
+const uploadImageTag = async (request, response, next) => {
+
+  const {id} = request.params;
+  const file = request.file;
+  const admin = request.admin
+  console.log(file)
+  try {
+    if (!admin) throw new CustomError('You don\'t have permissions', 401, 'Unauthorized')
+    
+    if (!file) throw new CustomError('No image received', 400, 'Bad Request');
+
+    let tag = await tagsService.getTag(id)
+
+    if(!tag) return
+
+    let fileKey = `public/tags/images/image-${id}`;
+
+    if (file.mimetype == 'image/png') {
+      fileKey = `public/tags/images/image-${id}.png`;
+    }
+
+    if (file.mimetype == 'image/jpg') {
+      fileKey = `public/tags/images/image-${id}.jpg`;
+    }
+
+    if (file.mimetype == 'image/jpeg') {
+      fileKey = `public/tags/images/image-${id}.jpeg`;
+    }
+
+    await uploadFile(file, fileKey);
+    let bucketURL = `${process.env.AWS_DOMAIN}${fileKey}`;
+    let newImagePublication = await tagsService.createUserImage(
+      id,
+      bucketURL
+    );
+
+    // await unlinkFile(file.path);
+
+    return response
+      .status(200)
+      .json({ results: bucketURL });
+
+  } catch (error) {
+    // await unlinkFile(file.path);
+    return next(error);
+  }
+};
+
+const removeUserTag = async (request, response, next) => {
+const {id} = request.params
+const admin = request.admin
+try {
+  if (!admin) throw new CustomError('You don\'t have permissions', 401, 'Unauthorized')
+
+  let {image_url} = await tagsService.getUser(id)
+  let awsDomain = process.env.AWS_DOMAIN
+  const imageKey = image_url.replace(awsDomain, '')
+  await deleteFile(imageKey)
+  let publicationImage = await tagsService.removeUserImage(id)
+
+  return response.status(200).json({ message: 'Removed', image: publicationImage })
+} catch (error) {
+  next(error)
+}
+}
+
 module.exports = {
   getTags,
   postTag,
   getTagById,
   putTag,
-  deleteTag
+  deleteTag,
+  uploadImageTag,
+  removeUserTag
 };

@@ -48,7 +48,7 @@ routerErrorHandler(app);
 
 if (process.env.NODE_ENV != 'test') {
   app.listen(PORT, () =>
-    console.log(`S erver running on http://localhost:${PORT}`)
+    console.log(`Server running on http://localhost:${PORT}`)
   );
 }
 

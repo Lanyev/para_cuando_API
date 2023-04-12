@@ -57,11 +57,14 @@ const createVote = async (request, response, next) => {
   try {
     const user_id = request.user.id;
     const publication_id = request.params.id
-    let publications = await publicationsService.createVote({
+    let vote = await publicationsService.createVote({
       publication_id,
       user_id,
     });
-    return response.status(201).json({ results: publications });
+    if( vote === 1 ){
+      return response.status(200).json({ message: 'Vote deleted' });
+    }
+    return response.status(201).json({ message: 'Vote created' });
   } catch (error) {
     next(error);
   }
