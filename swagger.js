@@ -714,6 +714,14 @@ const swaggerDocument = {
             description: 'Vista Paginada',
           },
         },
+        security: [
+          {
+            tokenJWT: [],
+          },
+          {
+            publicToken: []
+          }
+        ],
       },
       post: {
         tags: ['Publications'],
@@ -766,6 +774,14 @@ const swaggerDocument = {
             description: 'successful operation',
           },
         },
+        security: [
+          {
+            tokenJWT: [],
+          },
+          {
+            publicToken: []
+          }
+        ],
       },
       delete: {
         tags: ['Publications'],
@@ -793,7 +809,7 @@ const swaggerDocument = {
         security: [
           {
             tokenJWT: [],
-          },
+          }
         ],
       },
     },
@@ -1451,6 +1467,9 @@ const swaggerDocument = {
         scheme: 'bearer',
         bearerFormat: 'JWT',
       },
+      publicToken: {
+        description: '<strong>Without Sesion</strong>',
+      }
     },
   },
 };

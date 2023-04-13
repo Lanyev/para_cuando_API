@@ -1,6 +1,5 @@
-// const passportJWT = require('../middlewares/auth.middleware')
-
 const JwtStrategy = require('passport-jwt').Strategy
+const AnonymousStrategy = require( 'passport-anonymous' ).Strategy
 const { ExtractJwt } = require('passport-jwt')
 const passport = require('passport')
 require('dotenv').config()
@@ -12,6 +11,8 @@ const options = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('Bearer'),
   secretOrKey: process.env.JWT_SECRET_WORD
 }
+
+passport.use( new AnonymousStrategy() )
 
 passport.use(
   new JwtStrategy(options, (tokenDecoded, done) => {
@@ -29,4 +30,9 @@ passport.use(
   })
 )
 
-module.exports = passport.authenticate('jwt', { session: false })
+const passportAnonymous = passport.authenticate(['jwt', 'anonymous'], { session: false })
+const passportAuth = passport.authenticate('jwt', { session: false })
+module.exports = {
+  passportAnonymous,
+  passportAuth
+}
