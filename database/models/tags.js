@@ -25,7 +25,11 @@ module.exports = (sequelize, DataTypes) => {
     tableName: 'tags',
     underscored: true,
     timestamps: true,
-    scopes: { }
+    scopes: { 
+      filtered_tags:{
+        attributes: { exclude: ['created_at', 'updated_at', 'description'] },
+      }
+    }
   });
   return Tags;
 };

@@ -2,6 +2,7 @@ const models = require('../database/models');
 const { Op, cast, literal } = require('sequelize');
 const { CustomError } = require('../utils/helpers');
 const { v4: uuidv4 } = require('uuid');
+const { options } = require('joi');
 
 const defaultFilter =  {
   include: [
@@ -22,11 +23,6 @@ const defaultFilter =  {
       as: 'tags',
       through: { attributes: [] },
     },
-    {
-      model: models.Users.scope( 'same_vote' ),
-      as: 'same_vote',
-      through: { attributes: [] },
-    },
   ],
   attributes: {
     include: [
@@ -44,13 +40,26 @@ const defaultFilter =  {
   },
 }
 
+const addSameVote = (user_id, filter) => filter.include.push(
+  {
+    model: models.Users.scope( 'same_vote' ),
+    as: 'same_vote',
+    through:{
+      where: {user_id},
+      attributes:[]
+    }
+  }
+)
+
 class PublicationsService {
   constructor() {}
 
-  async findAndCount(query) {
+  async findAndCount(query, user_id) {
+    const filter = defaultFilter
+    addSameVote(user_id, filter)
     const options = {
       where: {},
-      ...defaultFilter
+      ...filter
     };
 
     const { limit, offset } = query;
@@ -59,46 +68,57 @@ class PublicationsService {
       options.offset = offset;
     }
 
-    const { tags:tagsToSplit } = query;
-    if (tagsToSplit) {
-      const tagsSplit = tagsToSplit.split(',')
-      let publicationsIds = []
-      for (const tagId of tagsSplit) {
-        const Tag = await models.Tags.findOne({
-            where:{id:tagId},
-            attributes:['id']
-          },
-          {
-            raw:true
-        })
+    // const { tags:tagsToSplit } = query;
+    // if (tagsToSplit) {
+    //   const tagsSplit = tagsToSplit.split(',')
+    //   let publicationsIds = []
+    //   for (const tagId of tagsSplit) {
+    //     const Tag = await models.Tags.findOne({
+    //         where:{id:tagId},
+    //         attributes:['id']
+    //       },
+    //       {
+    //         raw:true
+    //     })
         
-        const publicationsByTag = await Tag.getTags(  )
-        const ids = publicationsByTag.map( pub => pub.id )
-        publicationsIds = [...publicationsIds, ...ids]
-      }
+    //     const publicationsByTag = await Tag.getTags(  )
+    //     const ids = publicationsByTag.map( pub => pub.id )
+    //     publicationsIds = [...publicationsIds, ...ids]
+    //   }
 
-      options.where.id = { [Op.in]: publicationsIds  };
-    }
+    //   options.where.id = { [Op.in]: publicationsIds  };
+    // }
     
+    const { tags } = query;
+    if (tags) {
+      let tagsIDs = tags.split(',')
+      options.include.push({
+        model: models.Tags.scope('filtered_tags'),
+        as: 'filtered_tags',
+        required: true,
+        where: { id: tagsIDs },
+        through: { attributes: [] }
+      })
+    }
     const { votes_count } = query;
-    let arrQuery = []
-    if( votes_count )
-      arrQuery = votes_count.split( ',' )
-    if (arrQuery.length > 0 && arrQuery.length < 2) {
-      const filterOp = arrQuery[0]
-      const votes = arrQuery[1]
-      const filters = [
-        'gte',
-        'lte',
-        'lt',
-        'gt',
-        'eq',
-      ]
-      if( filters.some( filter => filter == votes ) ) 
-        throw new CustomError(`Operator ${filterOp} is not valid`, 400, 'Bad Request');
-        
-      options.where.phone = { [Op[filterOp]]: `%${votes}%` }
-    };
+    if( votes_count ){
+      let  arrQuery = votes_count.split( ',' )
+      if (!arrQuery.length > 0 && !arrQuery.length < 2) {
+        const filterOp = arrQuery[0]
+        const votes = arrQuery[1]
+        const filters = [
+          'gte',
+          'lte',
+          'lt',
+          'gt',
+          'eq',
+        ]
+        if( !filters.some( filter => filter == votes ) ) 
+          throw new CustomError(`Operator ${filterOp} is not valid`, 400, 'Bad Request');
+          
+        options.where.votes_count = { [Op[filterOp]]: `%${votes}%` }
+      };
+    }
 
     const { publication_type_id } = query;
     if (publication_type_id) {
@@ -118,6 +138,17 @@ class PublicationsService {
     const { description } = query;
     if (description) {
       options.where.description = { [Op.iLike]: `%${description}%` };
+    }
+    
+    if (user_id) {
+      options.include.push({
+        model: models.Users.scope( 'same_vote' ),
+        as: 'same_vote',
+        through:{
+          where: {user_id},
+          attributes:[]
+        }
+      })
     }
 
     options.distinct = true;
@@ -187,7 +218,6 @@ class PublicationsService {
         }
       })
 
-      // console.log(publication)
       let user = await publication.getSame_vote({where:{id:user_id}})
       let vote
       if (user[0]){
@@ -205,10 +235,25 @@ class PublicationsService {
   }
 
   //Return not an Instance raw:true | we also can converted to Json instead
-  async getPublication(id) {
-    const result = await models.Publications.findByPk(id, {
-      ...defaultFilter
-    });
+  async getPublication(id, user_id) {
+    const filter = defaultFilter
+    const options = {
+      ...filter
+    }
+
+    if (user_id) {
+      options.include.push({
+        model: models.Users.scope( 'same_vote' ),
+        as: 'same_vote',
+        through:{
+          where: {user_id},
+          attributes:[]
+        }
+      })
+    }
+
+    const result = await models.Publications.findByPk(id, options);
+
     if (!result) {
       throw new CustomError('Publication not found', 404);
     }
@@ -218,9 +263,6 @@ class PublicationsService {
   async findAndCountByVote( query ) {
     const {user_id} = query
     const filter = defaultFilter
-    const {include} = filter
-    include.pop()
-    filter.include = include
     const options = {
       where:{},
       ...filter
@@ -246,8 +288,11 @@ class PublicationsService {
   }
 
   async findAndCountByUserId( query ) {
+    const user_id = query.id
+    const filter = defaultFilter
+    console.log({user_id,filter})
     const options = {
-      where: {user_id:query.id},
+      where: {user_id},
       ...defaultFilter
     };
 
@@ -261,6 +306,7 @@ class PublicationsService {
     options.distinct = true;
 
     const publications = await models.Publications.findAndCountAll(options);
+    console.log(publications)
     return publications;
   }
 

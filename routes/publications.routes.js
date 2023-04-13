@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const passportAuth = require('../libs/passport');
+const {passportAuth, passportAnonymous} = require('../libs/passport');
 const {multerPublicationsPhotos} = require('../middlewares/multer.middleware');
 const isAdmin = require('../middlewares/isAdmin.middleware');
 const isSameUser = require('../middlewares/isSameUser.middleware');
@@ -20,9 +20,9 @@ const {
   removePublicationImage
 } = require( '../controllers/publicatonsImages.controllers' )
 
-router.get('/', getPublications)
+router.get('/', passportAnonymous, getPublications)
 
-router.get( '/:id', getPublicationById)
+router.get( '/:id', passportAnonymous, getPublicationById)
 
 router.use( passportAuth, isAdmin, isSameUser )
 

@@ -1,6 +1,6 @@
 const express = require('express')
 
-const passportAuth = require('../libs/passport')
+const {passportAuth} = require('../libs/passport')
 const isAdmin = require( '../middlewares/isAdmin.middleware' )
 const isSameUser = require( '../middlewares/isSameUser.middleware' )
 
