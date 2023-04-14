@@ -40,16 +40,31 @@ const defaultFilter =  {
   },
 }
 
-const addSameVote = (user_id, filter) => filter.include.push(
-  {
-    model: models.Users.scope( 'same_vote' ),
-    as: 'same_vote',
-    through:{
-      where: {user_id},
-      attributes:[]
-    }
+// const addSameVote = (user_id, filter) => filter.include.push(
+//   {
+//     model: models.Users.scope( 'same_vote' ),
+//     as: 'same_vote',
+//     through:{
+//       where: {user_id},
+//       attributes:[]
+//     }
+//   }
+// )
+
+
+const addSameVote = (user_id, filter) => {
+  if (user_id) {
+    filter.include.push({
+      model: models.Users.scope('same_vote'),
+      as: 'same_vote',
+      through: {
+        where: { user_id },
+        attributes: [],
+      },
+    });
   }
-)
+};
+
 
 class PublicationsService {
   constructor() {}
